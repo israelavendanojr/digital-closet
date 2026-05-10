@@ -2,10 +2,22 @@ import { useNavigate } from 'react-router-dom'
 import OutfitCard from '../components/ui/OutfitCard'
 import Button from '../components/ui/Button'
 
-const MOCK_OUTFITS = [
-  { id: '1', name: 'Favorite Outfit', items: [{ label: 'monkey shirt' }, { label: 'blue jeans' }, { label: 'red scarf' }] },
-  { id: '2', name: 'Work Look', items: [{ label: 'white button-up' }, { label: 'black slacks' }, { label: 'leather belt' }] },
-  { id: '3', name: 'Weekend Casual', items: [{ label: 'grey crewneck' }, { label: 'plaid skirt' }] },
+import uniqloAirismBlack from '../assets/tops/uniqlo_airism_black.avif'
+import petrolJacket from '../assets/outerwear/petrol_jacket.jpg'
+import vintageWashJeans from '../assets/bottoms/vintage_wash_jeans.jpg'
+import onika from '../assets/footwear/onika.jpg'
+
+const OUTFITS = [
+  {
+    id: '1',
+    name: 'Daily Fit',
+    items: [
+      { label: 'Uniqlo Airism Black', imageUrl: uniqloAirismBlack },
+      { label: 'Vintage Wash Jeans', imageUrl: vintageWashJeans },
+      { label: 'Petrol Jacket', imageUrl: petrolJacket },
+      { label: 'Onika', imageUrl: onika },
+    ],
+  },
 ]
 
 export default function SavedOutfits() {
@@ -18,7 +30,7 @@ export default function SavedOutfits() {
         <Button onClick={() => navigate('/outfits/new')}>+ New Outfit</Button>
       </div>
       <div className="grid grid-autofill-200 gap-4">
-        {MOCK_OUTFITS.map(outfit => (
+        {OUTFITS.map(outfit => (
           <OutfitCard
             key={outfit.id}
             name={outfit.name}

@@ -1,13 +1,20 @@
 import ClothingCard from '../components/ui/ClothingCard'
 import OutfitCard from '../components/ui/OutfitCard'
 
+import uniqloAirismBlack from '../assets/tops/uniqlo_airism_black.avif'
+import burgundyTee from '../assets/tops/burgunry_tee.jpeg'
+import vintageWashJeans from '../assets/bottoms/vintage_wash_jeans.jpg'
+import dunePant from '../assets/bottoms/dune_pant.jpg'
+import petrolJacket from '../assets/outerwear/petrol_jacket.jpg'
+import onika from '../assets/footwear/onika.jpg'
+
 const MOCK_CLOSET = [
-  { id: '1', label: 'monkey shirt' },
-  { id: '2', label: 'white button-up' },
-  { id: '3', label: 'striped tee' },
-  { id: '4', label: 'grey crewneck' },
-  { id: '7', label: 'blue jeans' },
-  { id: '8', label: 'black slacks' },
+  { id: '1', label: 'Uniqlo Airism Black', imageUrl: uniqloAirismBlack },
+  { id: '2', label: 'Burgundy Tee', imageUrl: burgundyTee },
+  { id: '3', label: 'Vintage Wash Jeans', imageUrl: vintageWashJeans },
+  { id: '4', label: 'Dune Pant', imageUrl: dunePant },
+  { id: '5', label: 'Petrol Jacket', imageUrl: petrolJacket },
+  { id: '6', label: 'Onika', imageUrl: onika },
 ]
 
 export default function Profile() {
@@ -31,7 +38,11 @@ export default function Profile() {
         <div className="max-w-50">
           <OutfitCard
             name="Favorite Outfit"
-            items={[{ label: 'monkey shirt' }, { label: 'blue jeans' }, { label: 'red scarf' }]}
+            items={[
+              { label: 'Uniqlo Airism Black', imageUrl: uniqloAirismBlack },
+              { label: 'Vintage Wash Jeans', imageUrl: vintageWashJeans },
+              { label: 'Petrol Jacket', imageUrl: petrolJacket },
+            ]}
           />
         </div>
       </section>
@@ -40,7 +51,7 @@ export default function Profile() {
         <h2 className="text-lg font-medium">My Closet</h2>
         <div className="grid grid-autofill-140 gap-3.5">
           {MOCK_CLOSET.map(item => (
-            <ClothingCard key={item.id} label={item.label} />
+            <ClothingCard key={item.id} label={item.label} imageUrl={item.imageUrl} />
           ))}
         </div>
       </section>

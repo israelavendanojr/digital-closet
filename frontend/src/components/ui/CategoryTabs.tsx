@@ -1,13 +1,13 @@
 import { cn } from '../../lib/cn'
 
-export type Category = 'Tops' | 'Bottoms' | 'Accessories'
+export type Category = 'Tops' | 'Bottoms' | 'Outerwear' | 'Footwear' | 'Accessories' | 'Hatwear'
 
 interface CategoryTabsProps {
   active: Category
   onChange: (cat: Category) => void
 }
 
-const CATEGORIES: Category[] = ['Tops', 'Bottoms', 'Accessories']
+const CATEGORIES: Category[] = ['Tops', 'Bottoms', 'Outerwear', 'Footwear', 'Accessories', 'Hatwear']
 
 export default function CategoryTabs({ active, onChange }: CategoryTabsProps) {
   return (

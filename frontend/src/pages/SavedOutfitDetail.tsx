@@ -2,10 +2,21 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Button from '../components/ui/Button'
 import ClothingCard from '../components/ui/ClothingCard'
 
-const MOCK_OUTFITS: Record<string, { name: string; items: { id: string; label: string }[] }> = {
-  '1': { name: 'Favorite Outfit', items: [{ id: '1', label: 'monkey shirt' }, { id: '7', label: 'blue jeans' }, { id: '10', label: 'red scarf' }] },
-  '2': { name: 'Work Look', items: [{ id: '2', label: 'white button-up' }, { id: '8', label: 'black slacks' }, { id: '11', label: 'leather belt' }] },
-  '3': { name: 'Weekend Casual', items: [{ id: '4', label: 'grey crewneck' }, { id: '9', label: 'plaid skirt' }] },
+import uniqloAirismBlack from '../assets/tops/uniqlo_airism_black.avif'
+import petrolJacket from '../assets/outerwear/petrol_jacket.jpg'
+import vintageWashJeans from '../assets/bottoms/vintage_wash_jeans.jpg'
+import onika from '../assets/footwear/onika.jpg'
+
+const MOCK_OUTFITS: Record<string, { name: string; items: { id: string; label: string; imageUrl?: string }[] }> = {
+  '1': {
+    name: 'Daily Fit',
+    items: [
+      { id: '1', label: 'Uniqlo Airism Black', imageUrl: uniqloAirismBlack },
+      { id: '2', label: 'Vintage Wash Jeans', imageUrl: vintageWashJeans },
+      { id: '3', label: 'Petrol Jacket', imageUrl: petrolJacket },
+      { id: '4', label: 'Onika', imageUrl: onika },
+    ],
+  },
 }
 
 export default function SavedOutfitDetail() {
@@ -40,7 +51,7 @@ export default function SavedOutfitDetail() {
       <p className="text-base text-text-muted italic">Does this look good?</p>
       <div className="grid grid-autofill-160 gap-4">
         {outfit.items.map(item => (
-          <ClothingCard key={item.id} label={item.label} />
+          <ClothingCard key={item.id} label={item.label} imageUrl={item.imageUrl} />
         ))}
       </div>
     </div>

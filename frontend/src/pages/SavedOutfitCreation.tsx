@@ -3,15 +3,42 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../components/ui/Button'
 import ClothingCard from '../components/ui/ClothingCard'
 
+import uniqloAirismBlack from '../assets/tops/uniqlo_airism_black.avif'
+import uniqloAirismWhite from '../assets/tops/uniqlo_airism_white.avif'
+import burgundyTee from '../assets/tops/burgunry_tee.jpeg'
+import blackCollar from '../assets/tops/black_collar.avif'
+import vintageWashJeans from '../assets/bottoms/vintage_wash_jeans.jpg'
+import lightWashJeans from '../assets/bottoms/light_wash_jeans.avif'
+import dunePant from '../assets/bottoms/dune_pant.jpg'
+import petrolJacket from '../assets/outerwear/petrol_jacket.jpg'
+import leatherJacket from '../assets/outerwear/leather_jacket.avif'
+import oliveSweater from '../assets/outerwear/olive_sweater.jpg'
+import onika from '../assets/footwear/onika.jpg'
+import loaferBlack from '../assets/footwear/loafer_black.jpg'
+import brownChelsea from '../assets/footwear/brown_chelsea.webp'
+import braceletSilver from '../assets/accesories/bracelet_silver.webp'
+import necklaceSilver from '../assets/accesories/necklace_silver.png'
+import blackCap from '../assets/hatwear/black_cap.avif'
+import yankeeGrey from '../assets/hatwear/yankee_grey.webp'
+
 const ALL_ITEMS = [
-  { id: '1', label: 'monkey shirt' },
-  { id: '2', label: 'white button-up' },
-  { id: '3', label: 'striped tee' },
-  { id: '4', label: 'grey crewneck' },
-  { id: '7', label: 'blue jeans' },
-  { id: '8', label: 'black slacks' },
-  { id: '9', label: 'plaid skirt' },
-  { id: '10', label: 'red scarf' },
+  { id: '1', label: 'Uniqlo Airism Black', imageUrl: uniqloAirismBlack },
+  { id: '2', label: 'Uniqlo Airism White', imageUrl: uniqloAirismWhite },
+  { id: '3', label: 'Burgundy Tee', imageUrl: burgundyTee },
+  { id: '4', label: 'Black Collar', imageUrl: blackCollar },
+  { id: '5', label: 'Vintage Wash Jeans', imageUrl: vintageWashJeans },
+  { id: '6', label: 'Light Wash Jeans', imageUrl: lightWashJeans },
+  { id: '7', label: 'Dune Pant', imageUrl: dunePant },
+  { id: '8', label: 'Petrol Jacket', imageUrl: petrolJacket },
+  { id: '9', label: 'Leather Jacket', imageUrl: leatherJacket },
+  { id: '10', label: 'Olive Sweater', imageUrl: oliveSweater },
+  { id: '11', label: 'Onika', imageUrl: onika },
+  { id: '12', label: 'Black Loafer', imageUrl: loaferBlack },
+  { id: '13', label: 'Brown Chelsea', imageUrl: brownChelsea },
+  { id: '14', label: 'Silver Bracelet', imageUrl: braceletSilver },
+  { id: '15', label: 'Silver Necklace', imageUrl: necklaceSilver },
+  { id: '16', label: 'Black Cap', imageUrl: blackCap },
+  { id: '17', label: 'Grey Yankee', imageUrl: yankeeGrey },
 ]
 
 export default function SavedOutfitCreation() {
@@ -52,6 +79,7 @@ export default function SavedOutfitCreation() {
           >
             <ClothingCard
               label={item.label}
+              imageUrl={item.imageUrl}
               onClick={() => toggle(item.id)}
             />
           </div>
