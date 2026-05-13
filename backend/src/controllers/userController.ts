@@ -1,4 +1,3 @@
-
 const createUser = async (req:any, res:any) => {
     const newUser = req.body;
     res.json({ message: 'User created.', user: newUser})
