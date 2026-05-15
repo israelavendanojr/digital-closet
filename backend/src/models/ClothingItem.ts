@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 /*
- * Define the IClothingItem interface that extends (inherit's everything from) Mongoose's Document.
+ * Define the IClothingItem interface that inherit's everything from Mongoose's Document.
  * - Mongoose document: a JavaScript object that represents a single record (row) in a MongoDB collection
  * - Collection: a group of MongoDB documents, similar to a table in relational databases
  */
