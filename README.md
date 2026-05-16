@@ -86,4 +86,4 @@ All navigation is client-side via React Router. `TopNav` is rendered on every pa
 ## Links
  
 - **Figma:** https://www.figma.com/design/WjEcSV8ckoe3d5Eq7BsqJa/CSCI-342-Group-Project
-- **Primary Notion:** https://www.notion.so/Project-Report-Milestone-2-35e445435554802f8621e3050e6c63fa?source=copy_link
+- **Primary Notion:** https://www.notion.so/SP26-CSCI-342-Final-Project-Digital-Closet-App-344445435554807ca3f5e325ec764c6f?source=copy_link
