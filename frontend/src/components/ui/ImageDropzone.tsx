@@ -21,7 +21,7 @@ export default function ImageDropzone({ onFile, preview }: ImageDropzoneProps) {
 
   return (
     <div
-      className="border-2 border-dashed border-border rounded bg-bg-card cursor-pointer flex items-center justify-center min-h-70 transition-[border-color,background] duration-150 relative overflow-hidden hover:border-text-muted hover:bg-border"
+      className="border-2 border-dashed border-border rounded bg-bg-card cursor-pointer flex items-center justify-center min-h-70 transition-[border-color,background] duration-150 relative overflow-hidden hover:border-text-muted hover:bg-hover"
       onDragOver={e => e.preventDefault()}
       onDrop={handleDrop}
       onClick={() => inputRef.current?.click()}

@@ -7,7 +7,7 @@ export default function Home() {
     <div className="flex flex-col items-center px-6 pt-[60px] pb-10 gap-12">
       <div className="text-center">
         <h1 className="text-[42px] font-light tracking-[-1px] mb-3">Organize Your Style</h1>
-        <p className="text-base text-text-muted">Your digital wardrobe, always at hand</p>
+        <p className="text-base text-text-muted">Mix and match your favorite pieces, all in one place</p>
       </div>
       <div className="flex gap-5 flex-wrap justify-center w-full max-w-[800px]">
         <button

@@ -23,8 +23,8 @@ import brownChelsea from '../assets/footwear/brown_chelsea.webp'
 import braceletSilver from '../assets/accesories/bracelet_silver.webp'
 import necklaceSilver from '../assets/accesories/necklace_silver.png'
 
-import blackCap from '../assets/hatwear/black_cap.avif'
-import yankeeGrey from '../assets/hatwear/yankee_grey.webp'
+import blackCap from '../assets/headwear/black_cap.avif'
+import yankeeGrey from '../assets/headwear/yankee_grey.webp'
 
 const MOCK_ITEMS: Record<Category, { id: string; label: string; imageUrl?: string }[]> = {
   Tops: [
@@ -52,7 +52,7 @@ const MOCK_ITEMS: Record<Category, { id: string; label: string; imageUrl?: strin
     { id: '14', label: 'Silver Bracelet', imageUrl: braceletSilver },
     { id: '15', label: 'Silver Necklace', imageUrl: necklaceSilver },
   ],
-  Hatwear: [
+  Headwear: [
     { id: '16', label: 'Black Cap', imageUrl: blackCap },
     { id: '17', label: 'Grey Yankee', imageUrl: yankeeGrey },
   ],

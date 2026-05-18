@@ -1,17 +1,17 @@
 import { cn } from '../../lib/cn'
 
-export type Category = 'Tops' | 'Bottoms' | 'Outerwear' | 'Footwear' | 'Accessories' | 'Hatwear'
+export type Category = 'Tops' | 'Bottoms' | 'Outerwear' | 'Footwear' | 'Headwear' | 'Accessories'
 
 interface CategoryTabsProps {
   active: Category
   onChange: (cat: Category) => void
 }
 
-const CATEGORIES: Category[] = ['Tops', 'Bottoms', 'Outerwear', 'Footwear', 'Accessories', 'Hatwear']
+const CATEGORIES: Category[] = ['Tops', 'Bottoms', 'Outerwear', 'Footwear', 'Headwear', 'Accessories']
 
 export default function CategoryTabs({ active, onChange }: CategoryTabsProps) {
   return (
-    <div className="flex border-b border-border">
+    <div className="flex justify-between border-b border-border px-10">
       {CATEGORIES.map(cat => (
         <button
           key={cat}

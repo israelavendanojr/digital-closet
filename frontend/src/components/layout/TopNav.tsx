@@ -4,12 +4,12 @@ export default function TopNav() {
   const navigate = useNavigate()
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 bg-bg border-b border-border sticky top-0 z-100">
+    <nav className="flex items-center justify-between px-6 py-4 bg-bg-card border-b border-border sticky top-0 z-100">
       <button
-        className="bg-transparent border-none text-xl font-medium text-text tracking-[-0.5px] p-0 cursor-pointer hover:opacity-70 transition-opacity duration-150"
+        className="bg-transparent border-none text-4xl font-medium font-logo text-text tracking-[-0.5px] p-0 cursor-pointer hover:opacity-70 transition-opacity duration-150"
         onClick={() => navigate('/')}
       >
-        digital-closet
+        digi•closet
       </button>
       <div className="flex items-center gap-2">
         <button
