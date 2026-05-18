@@ -5,13 +5,13 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center px-6 pt-[60px] pb-10 gap-12">
-      <div className="text-center">
+      <div className="flex flex-col">
         <h1 className="text-[42px] font-light tracking-[-1px] mb-3">Organize Your Style</h1>
         <p className="text-base text-text-muted">Mix and match your favorite pieces, all in one place</p>
       </div>
       <div className="flex gap-5 flex-wrap justify-center w-full max-w-[800px]">
         <button
-          className="bg-bg-card border border-border rounded px-6 py-8 cursor-pointer text-center flex flex-col items-center gap-2.5 flex-1 min-w-[180px] transition-[box-shadow,transform] duration-150 hover:shadow hover:-translate-y-0.5"
+          className="bg-bg-card border border-border rounded px-6 py-8 cursor-pointer text-center flex flex-col items-center gap-2.5 flex-1 min-w-[180px] transition-[box-shadow,transform] duration-150 hover:shadow-md shadow-sm"
           onClick={() => navigate('/clothes')}
         >
           <div className="text-text-muted mb-1">
@@ -24,7 +24,7 @@ export default function Home() {
         </button>
 
         <button
-          className="bg-bg-card border border-border rounded px-6 py-8 cursor-pointer text-center flex flex-col items-center gap-2.5 flex-1 min-w-[180px] transition-[box-shadow,transform] duration-150 hover:shadow hover:-translate-y-0.5"
+          className="bg-bg-card border border-border rounded px-6 py-8 cursor-pointer text-center flex flex-col items-center gap-2.5 flex-1 min-w-[180px] transition-[box-shadow,transform] duration-150 hover:shadow-md shadow-sm"
           onClick={() => navigate('/outfits')}
         >
           <div className="text-text-muted mb-1">
@@ -40,7 +40,7 @@ export default function Home() {
         </button>
 
         <button
-          className="bg-bg-card border border-border rounded px-6 py-8 cursor-pointer text-center flex flex-col items-center gap-2.5 flex-1 min-w-[180px] transition-[box-shadow,transform] duration-150 hover:shadow hover:-translate-y-0.5"
+          className="bg-bg-card border border-border rounded px-6 py-8 cursor-pointer text-center flex flex-col items-center gap-2.5 flex-1 min-w-[180px] transition-[box-shadow,transform] duration-150 hover:shadow-md shadow-sm"
           onClick={() => navigate('/upload')}
         >
           <div className="text-text-muted mb-1">

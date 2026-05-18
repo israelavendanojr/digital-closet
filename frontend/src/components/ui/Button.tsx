@@ -7,9 +7,9 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses = {
-  primary:   'bg-bg-card text-text border border-border hover:enabled:bg-border',
-  secondary: 'bg-text text-bg border-none hover:enabled:opacity-85',
-  ghost:     'bg-transparent text-text-muted border border-border hover:enabled:bg-bg-card hover:enabled:text-text',
+  primary:   'bg-bga-card text-text border border-border hover:enabled:bg-border shadow-sm',
+  secondary: 'bg-text text-bg border-none hover:enabled:opacity-85 shadow-sm',
+  ghost:     'bg-transparent text-text-muted border border-border hover:enabled:bg-bg-card hover:enabled:text-text shadow-sm',
 }
 
 const sizeClasses = {
