@@ -8,7 +8,7 @@ interface ClothingCardProps {
 export default function ClothingCard({ label, imageUrl, onClick }: ClothingCardProps) {
   return (
     <button
-      className="bg-bg-card border border-border rounded p-0 cursor-pointer text-left flex flex-col overflow-hidden transition-shadow duration-150 hover:shadow"
+      className="bg-bg-card border border-border rounded p-0 cursor-pointer text-left flex flex-col overflow-hidden transition-shadow duration-150 hover:shadow-md shadow-sm"
       onClick={onClick}
     >
       <div className="w-full aspect-square bg-border flex items-center justify-center overflow-hidden">

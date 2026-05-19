@@ -18,8 +18,8 @@ import loaferBlack from '../assets/footwear/loafer_black.jpg'
 import brownChelsea from '../assets/footwear/brown_chelsea.webp'
 import braceletSilver from '../assets/accesories/bracelet_silver.webp'
 import necklaceSilver from '../assets/accesories/necklace_silver.png'
-import blackCap from '../assets/hatwear/black_cap.avif'
-import yankeeGrey from '../assets/hatwear/yankee_grey.webp'
+import blackCap from '../assets/headwear/black_cap.avif'
+import yankeeGrey from '../assets/headwear/yankee_grey.webp'
 
 const ALL_ITEMS = [
   { id: '1', label: 'Uniqlo Airism Black', imageUrl: uniqloAirismBlack },

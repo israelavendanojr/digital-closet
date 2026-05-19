@@ -39,11 +39,11 @@ export default function SavedOutfits() {
           />
         ))}
         <button
-          className="bg-transparent border-2 border-dashed border-border rounded cursor-pointer flex flex-col items-center justify-content gap-2 aspect-square text-text-muted text-sm transition-[background,border-color] duration-150 hover:bg-bg-card hover:border-text-muted"
+          className="bg-transparent border-2 border-dashed border-border rounded cursor-pointer flex flex-col items-center justify-center gap-3 text-text-muted text-sm transition-[background,border-color] duration-150 hover:bg-bg-card hover:border-text-muted"
           onClick={() => navigate('/outfits/new')}
         >
-          <span className="text-[28px] leading-none">+</span>
-          <span>Create outfit</span>
+          <span className="text-[48px] leading-none">+</span>
+          <span className="text-[18px]">Create outfit</span>
         </button>
       </div>
     </div>

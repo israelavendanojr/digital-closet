@@ -1,13 +1,31 @@
 @import "tailwindcss";
 
+
+@font-face {
+  font-family: 'Figtree';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('./assets/fonts/Figtree-VariableFont_wght.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Londrina Shadow';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./assets/fonts/LondrinaShadow-Regular.ttf') format('truetype');
+}
+
 @theme {
-  --color-bg:         #F5F1EB;
-  --color-bg-card:    #EDE9E1;
+  --color-bg:         #FFF9E6;
+  --color-bg-card:    #F5EFDA;
   --color-bg-input:   #fff;
-  --color-text:       #333333;
-  --color-text-muted: #888888;
-  --color-text-light: #aaaaaa;
-  --color-border:     #D8D4CC;
+  --color-text:       #5B5B5B;
+  --color-text-muted: #737373;
+  --color-text-light: #8E8E8E;
+  --color-border:     #5B5B5B;
+  --color-hover:      #F0E9D0;
 
   --shadow-DEFAULT: rgba(0, 0, 0, 0.08) 0 2px 8px;
   --shadow-card:    rgba(0, 0, 0, 0.06) 0 1px 4px;
@@ -16,7 +34,8 @@
   --radius-sm:      8px;
   --radius-pill:    100px;
 
-  --font-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Figtree', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-logo: 'Londrina Shadow', cursive;
 }
 
 @layer base {
