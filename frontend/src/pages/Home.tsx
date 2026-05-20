@@ -5,7 +5,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center px-4 md:px-6 pt-10 md:pt-[60px] pb-10 gap-9 w-full overflow-x-hidden">
-      <div className="flex flex-col justify-start items-center xl:items-start w-full max-w-7xl">
+      <div className="flex flex-col justify-start items-center xl:items-start w-[1250px]">
         <h1 className="text-[42px] font-light tracking-[-2px]">Organize Your Style</h1>
         <p className="text-base text-text-muted font-light">Mix and match your favorite pieces, all in one place</p>
       </div>
@@ -28,7 +28,7 @@ export default function Home() {
         </button>
 
         <div className="flex items-center justify-end">
-          <h1 className="rotate-90 cursor-default text-2xl xl:-mr-15 xl:-ml-75 hidden xl:block">✩₊˚.⋆☾⋆⁺₊✧₊⋆⁺₊✩₊˚.⋆☾⋆⁺₊</h1>
+          <h1 className="rotate-90 cursor-default text-2xl -mr-21 -ml-75 hidden xl:block">✩₊˚.⋆☾⋆⁺₊✧₊⋆⁺₊✩₊˚.⋆☾⋆⁺₊</h1>
         </div>
 
         <button
@@ -46,7 +46,7 @@ export default function Home() {
           <h2 className="text-4xl font-light mt-4">Saved Outfits</h2>
           <p className="text-md text-text-muted font-light mt-2">View &amp; create your outfit combos</p>
         </button>
-        <h1 className="-rotate-90 cursor-default text-2xl ml-12 hidden xl:block">✩₊˚.⋆☾⋆⁺₊✧₊⋆⁺₊✩₊˚.⋆☾⋆⁺₊</h1>
+        <h1 className="-rotate-90 cursor-default text-2xl ml-10 hidden xl:block">✩₊˚.⋆☾⋆⁺₊✧₊⋆⁺₊✩₊˚.⋆☾⋆⁺₊</h1>
       </div>
 
       <button
