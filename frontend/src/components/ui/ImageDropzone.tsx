@@ -21,7 +21,7 @@ export default function ImageDropzone({ onFile, preview }: ImageDropzoneProps) {
 
   return (
     <div
-      className="border-2 border-dashed border-border rounded bg-bg-card cursor-pointer flex items-center justify-center min-h-70 transition-[border-color,background] duration-150 relative overflow-hidden hover:border-text-muted hover:bg-hover"
+      className="border-2 border-dashed border-border rounded bg-bg-card cursor-pointer flex items-center justify-center min-h-110 transition-[border-color,background] duration-150 relative overflow-hidden hover:border-text-muted hover:bg-hover"
       onDragOver={e => e.preventDefault()}
       onDrop={handleDrop}
       onClick={() => inputRef.current?.click()}
@@ -38,15 +38,15 @@ export default function ImageDropzone({ onFile, preview }: ImageDropzoneProps) {
       ) : (
         <div className="flex flex-col items-center gap-2 px-6 py-10 text-center">
           <div className="text-text-muted mb-2">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="3" width="18" height="18" rx="2" />
               <circle cx="8.5" cy="8.5" r="1.5" />
               <polyline points="21 15 16 10 5 21" />
             </svg>
           </div>
-          <p className="text-base font-medium text-text">Upload your item</p>
-          <p className="text-sm text-text-muted">Or just drop here!!!</p>
-          <p className="text-xs text-text-light">(browser permission required for camera)</p>
+          <p className="text-[32px] font-light text-text">Upload your item</p>
+          <p className="text-[18px] text-text-muted font-light">Or just drop here!!!</p>
+          <p className="text-[14px] text-text-light font-light">(browser permission required for camera)</p>
         </div>
       )}
     </div>
