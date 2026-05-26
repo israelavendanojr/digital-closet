@@ -7,9 +7,9 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses = {
-  primary:   'bg-bga-card text-text border border-border hover:enabled:bg-border shadow-sm',
-  secondary: 'bg-text text-bg border-none hover:enabled:opacity-85 shadow-sm',
-  ghost:     'bg-transparent text-text-muted border border-border hover:enabled:bg-bg-card hover:enabled:text-text shadow-sm',
+  primary:   'bg-bg-card text-text border border-border hover:enabled:bg-hover shadow-sm',
+  secondary: 'bg-bg-card text-bg border-none hover:enabled:opacity-85 shadow-sm',
+  ghost:     'bg-transparent text-text-muted border border-border hover:enabled:bg-hover hover:enabled:text-text shadow-sm',
 }
 
 const sizeClasses = {
@@ -28,7 +28,7 @@ export default function Button({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-pill font-medium cursor-pointer transition-[opacity,background] duration-150 whitespace-nowrap disabled:opacity-45 disabled:cursor-not-allowed',
+        'inline-flex items-center justify-center gap-2 rounded-pill font-light cursor-pointer transition-[opacity,background] duration-150 whitespace-nowrap disabled:opacity-45 disabled:cursor-not-allowed',
         variantClasses[variant],
         sizeClasses[size],
         className,

@@ -18,14 +18,15 @@
 }
 
 @theme {
-  --color-bg:         #FFF9E6;
-  --color-bg-card:    #F5EFDA;
-  --color-bg-input:   #fff;
-  --color-text:       #5B5B5B;
-  --color-text-muted: #737373;
-  --color-text-light: #8E8E8E;
-  --color-border:     #5B5B5B;
-  --color-hover:      #F0E9D0;
+  --color-bg:           #FFF9E6;
+  --color-bg-card:      #F5EFDA;
+  --color-bg-input:     #fff;
+  --color-text:         #5B5B5B;
+  --color-text-muted:   #737373;
+  --color-text-light:   #8E8E8E;
+  --color-border:       #5B5B5B;
+  --color-hover:        #F0E9D0;
+  --color-hover-error:  #f0dad0;
 
   --shadow-DEFAULT: rgba(0, 0, 0, 0.08) 0 2px 8px;
   --shadow-card:    rgba(0, 0, 0, 0.06) 0 1px 4px;

@@ -14,10 +14,10 @@ export default function Upload() {
   }
 
   return (
-    <div className="px-6 pt-8 pb-25 flex flex-col gap-3 max-w-140 mx-auto w-full">
-      <h1 className="text-[28px] font-normal">Upload Item</h1>
-      <p className="text-sm text-text-muted">Add a new piece to your wardrobe</p>
-      <div className="mt-2">
+    <div className="px-6 pt-8 pb-25 flex flex-col gap-1 max-w-220 mx-auto w-full">
+      <h1 className="text-[36px] font-light">Upload Item</h1>
+      <p className="text-sm text-text-muted font-light">Add a new piece to your wardrobe</p>
+      <div className="mt-6">
         <ImageDropzone onFile={handleFile} preview={preview} />
       </div>
       <div className="flex gap-3 justify-end mt-4">
