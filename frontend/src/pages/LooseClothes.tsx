@@ -1,67 +1,26 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import CategoryTabs, { type Category } from '../components/ui/CategoryTabs'
 import ClothingCard from '../components/ui/ClothingCard'
 import Button from '../components/ui/Button'
-
-import uniqloAirismBlack from '../assets/tops/uniqlo_airism_black.avif'
-import uniqloAirismWhite from '../assets/tops/uniqlo_airism_white.avif'
-import burgundyTee from '../assets/tops/burgunry_tee.jpeg'
-import blackCollar from '../assets/tops/black_collar.avif'
-
-import vintageWashJeans from '../assets/bottoms/vintage_wash_jeans.jpg'
-import lightWashJeans from '../assets/bottoms/light_wash_jeans.avif'
-import dunePant from '../assets/bottoms/dune_pant.jpg'
-
-import petrolJacket from '../assets/outerwear/petrol_jacket.jpg'
-import leatherJacket from '../assets/outerwear/leather_jacket.avif'
-import oliveSweater from '../assets/outerwear/olive_sweater.jpg'
-
-import onika from '../assets/footwear/onika.jpg'
-import loaferBlack from '../assets/footwear/loafer_black.jpg'
-import brownChelsea from '../assets/footwear/brown_chelsea.webp'
-
-import braceletSilver from '../assets/accesories/bracelet_silver.webp'
-import necklaceSilver from '../assets/accesories/necklace_silver.png'
-
-import blackCap from '../assets/headwear/black_cap.avif'
-import yankeeGrey from '../assets/headwear/yankee_grey.webp'
-
-const MOCK_ITEMS: Record<Category, { id: string; label: string; imageUrl?: string }[]> = {
-  Tops: [
-    { id: '1', label: 'Uniqlo Airism Black', imageUrl: uniqloAirismBlack },
-    { id: '2', label: 'Uniqlo Airism White', imageUrl: uniqloAirismWhite },
-    { id: '3', label: 'Burgundy Tee', imageUrl: burgundyTee },
-    { id: '4', label: 'Black Collar', imageUrl: blackCollar },
-  ],
-  Bottoms: [
-    { id: '5', label: 'Vintage Wash Jeans', imageUrl: vintageWashJeans },
-    { id: '6', label: 'Light Wash Jeans', imageUrl: lightWashJeans },
-    { id: '7', label: 'Dune Pant', imageUrl: dunePant },
-  ],
-  Outerwear: [
-    { id: '8', label: 'Petrol Jacket', imageUrl: petrolJacket },
-    { id: '9', label: 'Leather Jacket', imageUrl: leatherJacket },
-    { id: '10', label: 'Olive Sweater', imageUrl: oliveSweater },
-  ],
-  Footwear: [
-    { id: '11', label: 'Onika', imageUrl: onika },
-    { id: '12', label: 'Black Loafer', imageUrl: loaferBlack },
-    { id: '13', label: 'Brown Chelsea', imageUrl: brownChelsea },
-  ],
-  Accessories: [
-    { id: '14', label: 'Silver Bracelet', imageUrl: braceletSilver },
-    { id: '15', label: 'Silver Necklace', imageUrl: necklaceSilver },
-  ],
-  Headwear: [
-    { id: '16', label: 'Black Cap', imageUrl: blackCap },
-    { id: '17', label: 'Grey Yankee', imageUrl: yankeeGrey },
-  ],
-}
+import { getAllClothes, toBackendCategory, TEST_USER_ID, type ClothingItem } from '../services/clothingApi'
 
 export default function LooseClothes() {
+  const navigate = useNavigate()
   const [category, setCategory] = useState<Category>('Tops')
   const [filterOpen, setFilterOpen] = useState(false)
-  const items = MOCK_ITEMS[category]
+  const [allItems, setAllItems] = useState<ClothingItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    getAllClothes(TEST_USER_ID)
+      .then(setAllItems)
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const items = allItems.filter(item => item.category === toBackendCategory(category))
 
   return (
     <div className="flex flex-col">
@@ -72,8 +31,13 @@ export default function LooseClothes() {
         </Button>
       </div>
       <div className="grid grid-autofill-150 gap-4 p-6">
+        {loading && <p className="text-text-muted col-span-full">Loading...</p>}
+        {error && <p className="text-red-500 col-span-full">{error}</p>}
+        {!loading && !error && items.length === 0 && (
+          <p className="text-text-muted col-span-full">No items in this category.</p>
+        )}
         {items.map(item => (
-          <ClothingCard key={item.id} label={item.label} imageUrl={item.imageUrl} />
+          <ClothingCard key={item._id} label={item.name} imageUrl={item.imageUrl} onClick={() => navigate(`/clothes/${item._id}`)} />
         ))}
       </div>
     </div>

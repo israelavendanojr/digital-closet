@@ -1,27 +1,24 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import OutfitCard from '../components/ui/OutfitCard'
 import Button from '../components/ui/Button'
-
-import uniqloAirismBlack from '../assets/tops/uniqlo_airism_black.avif'
-import petrolJacket from '../assets/outerwear/petrol_jacket.jpg'
-import vintageWashJeans from '../assets/bottoms/vintage_wash_jeans.jpg'
-import onika from '../assets/footwear/onika.jpg'
-
-const OUTFITS = [
-  {
-    id: '1',
-    name: 'Daily Fit',
-    items: [
-      { label: 'Uniqlo Airism Black', imageUrl: uniqloAirismBlack },
-      { label: 'Vintage Wash Jeans', imageUrl: vintageWashJeans },
-      { label: 'Petrol Jacket', imageUrl: petrolJacket },
-      { label: 'Onika', imageUrl: onika },
-    ],
-  },
-]
+import { getAllOutfits, TEST_USER_ID, type Outfit } from '../services/outfitApi'
 
 export default function SavedOutfits() {
   const navigate = useNavigate()
+  const [outfits, setOutfits] = useState<Outfit[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    getAllOutfits(TEST_USER_ID)
+      .then(setOutfits)
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading) return <p className="px-6 py-8 text-text-muted">Loading...</p>
+  if (error) return <p className="px-6 py-8 text-red-500">{error}</p>
 
   return (
     <div className="p-6 flex flex-col gap-6">
@@ -30,12 +27,12 @@ export default function SavedOutfits() {
         <Button onClick={() => navigate('/outfits/new')}>+ New Outfit</Button>
       </div>
       <div className="grid grid-autofill-200 gap-4">
-        {OUTFITS.map(outfit => (
+        {outfits.map(outfit => (
           <OutfitCard
-            key={outfit.id}
+            key={outfit._id}
             name={outfit.name}
-            items={outfit.items}
-            onClick={() => navigate(`/outfits/${outfit.id}`)}
+            items={outfit.items.map(item => ({ label: item.name, imageUrl: item.imageUrl }))}
+            onClick={() => navigate(`/outfits/${outfit._id}`)}
           />
         ))}
         <button

@@ -1,58 +1,88 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/ui/Button'
-import ClothingCard from '../components/ui/ClothingCard'
-
-import uniqloAirismBlack from '../assets/tops/uniqlo_airism_black.avif'
-import uniqloAirismWhite from '../assets/tops/uniqlo_airism_white.avif'
-import burgundyTee from '../assets/tops/burgunry_tee.jpeg'
-import blackCollar from '../assets/tops/black_collar.avif'
-import vintageWashJeans from '../assets/bottoms/vintage_wash_jeans.jpg'
-import lightWashJeans from '../assets/bottoms/light_wash_jeans.avif'
-import dunePant from '../assets/bottoms/dune_pant.jpg'
-import petrolJacket from '../assets/outerwear/petrol_jacket.jpg'
-import leatherJacket from '../assets/outerwear/leather_jacket.avif'
-import oliveSweater from '../assets/outerwear/olive_sweater.jpg'
-import onika from '../assets/footwear/onika.jpg'
-import loaferBlack from '../assets/footwear/loafer_black.jpg'
-import brownChelsea from '../assets/footwear/brown_chelsea.webp'
-import braceletSilver from '../assets/accesories/bracelet_silver.webp'
-import necklaceSilver from '../assets/accesories/necklace_silver.png'
-import blackCap from '../assets/headwear/black_cap.avif'
-import yankeeGrey from '../assets/headwear/yankee_grey.webp'
-
-const ALL_ITEMS = [
-  { id: '1', label: 'Uniqlo Airism Black', imageUrl: uniqloAirismBlack },
-  { id: '2', label: 'Uniqlo Airism White', imageUrl: uniqloAirismWhite },
-  { id: '3', label: 'Burgundy Tee', imageUrl: burgundyTee },
-  { id: '4', label: 'Black Collar', imageUrl: blackCollar },
-  { id: '5', label: 'Vintage Wash Jeans', imageUrl: vintageWashJeans },
-  { id: '6', label: 'Light Wash Jeans', imageUrl: lightWashJeans },
-  { id: '7', label: 'Dune Pant', imageUrl: dunePant },
-  { id: '8', label: 'Petrol Jacket', imageUrl: petrolJacket },
-  { id: '9', label: 'Leather Jacket', imageUrl: leatherJacket },
-  { id: '10', label: 'Olive Sweater', imageUrl: oliveSweater },
-  { id: '11', label: 'Onika', imageUrl: onika },
-  { id: '12', label: 'Black Loafer', imageUrl: loaferBlack },
-  { id: '13', label: 'Brown Chelsea', imageUrl: brownChelsea },
-  { id: '14', label: 'Silver Bracelet', imageUrl: braceletSilver },
-  { id: '15', label: 'Silver Necklace', imageUrl: necklaceSilver },
-  { id: '16', label: 'Black Cap', imageUrl: blackCap },
-  { id: '17', label: 'Grey Yankee', imageUrl: yankeeGrey },
-]
+import { SlotView, cycle, MAIN_SLOTS, type MainSlot } from '../components/ui/OutfitBuilder'
+import { getAllClothes, TEST_USER_ID, type ClothingItem } from '../services/clothingApi'
+import { createOutfit } from '../services/outfitApi'
 
 export default function SavedOutfitCreation() {
   const navigate = useNavigate()
-  const [selected, setSelected] = useState<string[]>([])
+  const [clothingByCategory, setClothingByCategory] = useState<Record<string, ClothingItem[]>>({})
+  const [loading, setLoading] = useState(true)
+  const [slotIndex, setSlotIndex] = useState<Record<MainSlot, number>>({
+    hatwear: -1, outerwear: -1, tops: -1, bottoms: -1, footwear: -1,
+  })
+  const [accessorySlots, setAccessorySlots] = useState<number[]>([])
   const [name, setName] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  function toggle(id: string) {
-    setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id])
+  useEffect(() => {
+    getAllClothes(TEST_USER_ID)
+      .then(allItems => {
+        const byCategory: Record<string, ClothingItem[]> = {}
+        for (const item of allItems) {
+          if (!byCategory[item.category]) byCategory[item.category] = []
+          byCategory[item.category].push(item)
+        }
+        setClothingByCategory(byCategory)
+      })
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false))
+  }, [])
+
+  function moveSlot(cat: MainSlot, dir: 1 | -1) {
+    const items = clothingByCategory[cat] ?? []
+    setSlotIndex(prev => ({ ...prev, [cat]: cycle(prev[cat], items.length, dir) }))
   }
 
+  function moveAccessory(slotPos: number, dir: 1 | -1) {
+    const items = clothingByCategory['accessories'] ?? []
+    setAccessorySlots(prev => {
+      const next = [...prev]
+      next[slotPos] = cycle(next[slotPos], items.length, dir)
+      return next
+    })
+  }
+
+  function addAccessorySlot() {
+    setAccessorySlots(prev => [...prev, -1])
+  }
+
+  function removeAccessorySlot(slotPos: number) {
+    setAccessorySlots(prev => prev.filter((_, i) => i !== slotPos))
+  }
+
+  async function handleSave() {
+    if (!name.trim()) return
+    setSaving(true)
+    setError(null)
+    try {
+      const selectedIds: string[] = []
+      for (const { key } of MAIN_SLOTS) {
+        const idx = slotIndex[key]
+        if (idx !== -1) {
+          const item = (clothingByCategory[key] ?? [])[idx]
+          if (item) selectedIds.push(item._id)
+        }
+      }
+      const accessories = clothingByCategory['accessories'] ?? []
+      for (const idx of accessorySlots) {
+        if (idx !== -1 && accessories[idx]) selectedIds.push(accessories[idx]._id)
+      }
+      const outfit = await createOutfit({ userId: TEST_USER_ID, name, items: selectedIds })
+      navigate(`/outfits/${outfit._id}`)
+    } catch (err: any) {
+      setError(err.message)
+      setSaving(false)
+    }
+  }
+
+  const accessories = clothingByCategory['accessories'] ?? []
+
   return (
-    <div className="p-6 pb-25 flex flex-col gap-5">
-      <div className="flex items-center gap-4">
+    <div className="px-6 py-8 max-w-240 mx-auto w-full">
+      <div className="flex items-center gap-4 mb-8">
         <button
           className="bg-transparent border-none text-sm text-text-muted cursor-pointer p-0 hover:text-text transition-colors duration-150"
           onClick={() => navigate('/outfits')}
@@ -61,36 +91,88 @@ export default function SavedOutfitCreation() {
         </button>
         <h1 className="text-2xl font-normal">Create Outfit</h1>
       </div>
-      <div className="flex items-center gap-3">
-        <label className="text-sm text-text-muted whitespace-nowrap">Name:</label>
-        <input
-          className="borderless-input flex-1"
-          placeholder="e.g. Weekend Casual"
-          value={name}
-          onChange={e => setName(e.target.value)}
-        />
-      </div>
-      <p className="text-sm text-text-muted">Select items to include in this outfit</p>
-      <div className="grid grid-autofill-150 gap-4">
-        {ALL_ITEMS.map(item => (
-          <div
-            key={item.id}
-            className={`relative${selected.includes(item.id) ? ' item-selected-check' : ''}`}
-          >
-            <ClothingCard
-              label={item.label}
-              imageUrl={item.imageUrl}
-              onClick={() => toggle(item.id)}
-            />
+
+      {loading ? (
+        <p className="text-text-muted text-sm">Loading your wardrobe...</p>
+      ) : (
+        <div className="grid grid-cols-2 gap-10 items-start max-sm:grid-cols-1">
+
+          {/* Left: Visual outfit builder */}
+          <div className="flex gap-4 items-start">
+            {/* Main outfit stack */}
+            <div className="flex flex-col gap-2">
+              {MAIN_SLOTS.map(({ key, label }) => {
+                const items = clothingByCategory[key] ?? []
+                const idx = slotIndex[key]
+                const current = idx !== -1 ? items[idx] ?? null : null
+                return (
+                  <SlotView
+                    key={key}
+                    label={label}
+                    item={current}
+                    onPrev={() => moveSlot(key, -1)}
+                    onNext={() => moveSlot(key, 1)}
+                    disabled={items.length === 0}
+                  />
+                )
+              })}
+            </div>
+
+            {/* Accessories column */}
+            <div className="flex flex-col gap-2 pt-1">
+              <span className="text-xs text-text-muted font-medium ml-8">Accessories</span>
+              {accessorySlots.map((idx, slotPos) => {
+                const current = idx !== -1 ? accessories[idx] ?? null : null
+                return (
+                  <div key={slotPos} className="flex items-center gap-1">
+                    <SlotView
+                      label="Acc"
+                      item={current}
+                      onPrev={() => moveAccessory(slotPos, -1)}
+                      onNext={() => moveAccessory(slotPos, 1)}
+                      disabled={accessories.length === 0}
+                    />
+                    <button
+                      onClick={() => removeAccessorySlot(slotPos)}
+                      className="text-text-muted hover:text-text text-xs bg-transparent border-none cursor-pointer p-0 ml-1"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )
+              })}
+              <button
+                onClick={addAccessorySlot}
+                className="ml-8 text-xs text-text-muted hover:text-text bg-transparent border-none cursor-pointer p-0 text-left"
+              >
+                + Add accessory
+              </button>
+            </div>
           </div>
-        ))}
-      </div>
-      <div className="fixed bottom-0 left-0 right-0 bg-bg border-t border-border px-6 py-4 flex gap-3 justify-end">
-        <Button variant="ghost" onClick={() => navigate('/outfits')}>Cancel</Button>
-        <Button disabled={selected.length === 0 || !name.trim()} onClick={() => navigate('/outfits')}>
-          Save &amp; Quit
-        </Button>
-      </div>
+
+          {/* Right: Name + actions */}
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-text-muted">Name:</label>
+              <input
+                className="borderless-input"
+                placeholder="e.g. Weekend Casual"
+                value={name}
+                onChange={e => setName(e.target.value)}
+              />
+            </div>
+
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+
+            <div className="flex gap-3 justify-end mt-2">
+              <Button variant="ghost" onClick={() => navigate('/outfits')}>Cancel</Button>
+              <Button disabled={!name.trim() || saving} onClick={handleSave}>
+                {saving ? 'Saving...' : 'Save & Quit'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
