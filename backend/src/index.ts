@@ -18,7 +18,7 @@ app.post("/post", (req, res) => {
 });
 
 const PORT = 8080;
-const MONGO_URL = process.env.MONGO_URL as string;
+const MONGO_URL = process.env.MONGO_URI as string;
 
 mongoose.connect(MONGO_URL)
   .then(() => {

@@ -1,15 +1,20 @@
 
+import ClothingItem from '../models/ClothingItem.js';
+
 const createClothing = async (req:any, res:any) => {
     const newClothes = req.body;
     res.json({ message: 'Clothes created.', clothes: newClothes})
 }
-//get clothing item from a user
+//get clothing item by id
 const getClothingItem = async (req:any, res:any) => {
-    res.json({message: `Returning clothing with id ${req.params.id}.`})
+    const item = await ClothingItem.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: 'Item not found.' });
+    res.json(item);
 }
-//get all clothes from a user
+//get all clothes for a user
 const getAllClothes = async (req:any, res:any) => {
-    res.json({message: `Retrieving clothes for user id ${req.params.id}.`})
+    const items = await ClothingItem.find({ userId: req.params.userId });
+    res.json(items);
 }
 const updateClothes = async (req:any, res:any) => {
     res.json({message: `Updating clothing with id ${req.params.id}.`})
