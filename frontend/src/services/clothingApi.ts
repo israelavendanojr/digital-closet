@@ -37,3 +37,20 @@ export async function createClothing(formData: FormData): Promise<ClothingItem> 
   if (!res.ok) throw new Error(`Failed to create item: ${res.status}`)
   return res.json()
 }
+
+export async function getClothingItem(id: string): Promise<ClothingItem> {
+  const res = await fetch(`/api/clothes/${id}`)
+  if (!res.ok) throw new Error(`Failed to fetch item: ${res.status}`)
+  return res.json()
+}
+
+export async function updateClothing(id: string, formData: FormData): Promise<ClothingItem> {
+  const res = await fetch(`/api/clothes/${id}`, { method: 'PUT', body: formData })
+  if (!res.ok) throw new Error(`Failed to update item: ${res.status}`)
+  return res.json()
+}
+
+export async function deleteClothing(id: string): Promise<void> {
+  const res = await fetch(`/api/clothes/${id}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error(`Failed to delete item: ${res.status}`)
+}

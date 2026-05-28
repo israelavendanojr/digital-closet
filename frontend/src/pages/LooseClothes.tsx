@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import CategoryTabs, { type Category } from '../components/ui/CategoryTabs'
 import ClothingCard from '../components/ui/ClothingCard'
 import Button from '../components/ui/Button'
 import { getAllClothes, toBackendCategory, TEST_USER_ID, type ClothingItem } from '../services/clothingApi'
 
 export default function LooseClothes() {
+  const navigate = useNavigate()
   const [category, setCategory] = useState<Category>('Tops')
   const [filterOpen, setFilterOpen] = useState(false)
   const [allItems, setAllItems] = useState<ClothingItem[]>([])
@@ -35,7 +37,7 @@ export default function LooseClothes() {
           <p className="text-text-muted col-span-full">No items in this category.</p>
         )}
         {items.map(item => (
-          <ClothingCard key={item._id} label={item.name} imageUrl={item.imageUrl} />
+          <ClothingCard key={item._id} label={item.name} imageUrl={item.imageUrl} onClick={() => navigate(`/clothes/${item._id}`)} />
         ))}
       </div>
     </div>

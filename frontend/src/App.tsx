@@ -11,6 +11,7 @@ import UploadTags from './pages/UploadTags'
 import UploadConfirmation from './pages/UploadConfirmation'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
+import ClothingDetail from './pages/ClothingDetail'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/clothes" element={<LooseClothes />} />
+        <Route path="/clothes/:id" element={<ClothingDetail />} />
         <Route path="/outfits" element={<SavedOutfits />} />
         <Route path="/outfits/new" element={<SavedOutfitCreation />} />
         <Route path="/outfits/:id" element={<SavedOutfitDetail />} />
