@@ -5,13 +5,17 @@ import Button from '../components/ui/Button'
 
 const SUGGESTIONS = ['green', 'red', 'chic', 'y2k', 'winter', 'casual', 'formal', 'silly', 'vintage']
 
+const CATEGORIES = ['Tops', 'Bottoms', 'Outerwear', 'Footwear', 'Headwear', 'Accessories'] as const
+type CategoryLabel = typeof CATEGORIES[number]
+
 export default function UploadTags() {
   const navigate = useNavigate()
   const location = useLocation()
-  const state = location.state as { preview?: string; fileName?: string } | null
+  const state = location.state as { preview?: string; fileName?: string; file?: File } | null
   const preview = state?.preview
   const [label, setLabel] = useState(state?.fileName?.replace(/\.[^.]+$/, '') ?? '')
   const [tags, setTags] = useState<string[]>([])
+  const [category, setCategory] = useState<CategoryLabel>('Tops')
 
   return (
     <div className="px-6 py-8 max-w-200 mx-auto w-full">
@@ -34,6 +38,16 @@ export default function UploadTags() {
             />
           </div>
           <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-text-muted">Category:</label>
+            <select
+              className="borderless-input"
+              value={category}
+              onChange={e => setCategory(e.target.value as CategoryLabel)}
+            >
+              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-text-muted">Tags:</label>
             <TagInput tags={tags} onChange={setTags} suggestions={SUGGESTIONS} />
           </div>
@@ -41,7 +55,7 @@ export default function UploadTags() {
             <Button variant="ghost" onClick={() => navigate('/upload')}>← Back</Button>
             <Button
               disabled={!label.trim()}
-              onClick={() => navigate('/upload/confirm', { state: { preview, label, tags } })}
+              onClick={() => navigate('/upload/confirm', { state: { preview, label, tags, category, file: state?.file } })}
             >
               Next: Confirm
             </Button>

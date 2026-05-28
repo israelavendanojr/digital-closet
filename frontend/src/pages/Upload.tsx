@@ -24,7 +24,7 @@ export default function Upload() {
         <Button variant="ghost" onClick={() => navigate('/')}>Cancel</Button>
         <Button
           disabled={!file}
-          onClick={() => navigate('/upload/tags', { state: { preview, fileName: file?.name } })}
+          onClick={() => navigate('/upload/tags', { state: { preview, fileName: file?.name, file } })}
         >
           Next: Add Tags
         </Button>

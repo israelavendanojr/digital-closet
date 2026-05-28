@@ -31,3 +31,9 @@ export async function getAllClothes(userId: string): Promise<ClothingItem[]> {
   if (!res.ok) throw new Error(`Failed to fetch clothes: ${res.status}`)
   return res.json()
 }
+
+export async function createClothing(formData: FormData): Promise<ClothingItem> {
+  const res = await fetch('/api/clothes/', { method: 'POST', body: formData })
+  if (!res.ok) throw new Error(`Failed to create item: ${res.status}`)
+  return res.json()
+}

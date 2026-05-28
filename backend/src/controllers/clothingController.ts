@@ -1,9 +1,16 @@
 
 import ClothingItem from '../models/ClothingItem.js';
 
-const createClothing = async (req:any, res:any) => {
-    const newClothes = req.body;
-    res.json({ message: 'Clothes created.', clothes: newClothes})
+const createClothing = async (req: any, res: any) => {
+    if (!req.file) {
+        return res.status(400).json({ message: 'Image file is required.' });
+    }
+    const { userId, name, category, tags } = req.body;
+    const imageUrl = `/uploads/${req.file.filename}`;
+    const parsedTags = tags ? JSON.parse(tags) : [];
+    const item = new ClothingItem({ userId, name, category, tags: parsedTags, imageUrl });
+    await item.save();
+    res.status(201).json(item);
 }
 //get clothing item by id
 const getClothingItem = async (req:any, res:any) => {
