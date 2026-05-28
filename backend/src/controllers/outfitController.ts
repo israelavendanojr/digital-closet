@@ -1,20 +1,45 @@
-const createOutfit = async (req:any, res:any) => {
-    const newOutfit = req.body;
-    res.json({ message: 'Outfit created.', outfit: newOutfit})
+import Outfit from '../models/Outfit.js';
+
+const createOutfit = async (req: any, res: any) => {
+    const { userId, name, items, tags, isFavorite } = req.body;
+    const parsedItems = items ?? [];
+    const parsedTags = tags ?? [];
+    const outfit = new Outfit({ userId, name, items: parsedItems, tags: parsedTags, isFavorite: isFavorite ?? false });
+    await outfit.save();
+    const populated = await outfit.populate('items');
+    res.status(201).json(populated);
 }
-//get outfit 
-const getOutfit = async (req:any, res:any) => {
-    res.json({message: `Returning outfit with id ${req.params.id}.`})
+
+const getOutfit = async (req: any, res: any) => {
+    const outfit = await Outfit.findById(req.params.id).populate('items');
+    if (!outfit) return res.status(404).json({ message: 'Outfit not found.' });
+    res.json(outfit);
 }
-//get all outfits from a user
-const getAllOutfits = async (req:any, res:any) => {
-    res.json({message: `Retrieving all outfits for user id ${req.params.id}.`})
+
+const getAllOutfits = async (req: any, res: any) => {
+    const outfits = await Outfit.find({ userId: req.params.userId }).populate('items');
+    res.json(outfits);
 }
-const updateOutfit = async (req:any, res:any) => {
-    res.json({message: `Updating outfit with id ${req.params.id}.`})
+
+const updateOutfit = async (req: any, res: any) => {
+    const outfit = await Outfit.findById(req.params.id);
+    if (!outfit) return res.status(404).json({ message: 'Outfit not found.' });
+
+    const { name, items, tags, isFavorite } = req.body;
+    if (name !== undefined) outfit.name = name;
+    if (items !== undefined) outfit.items = items;
+    if (tags !== undefined) outfit.tags = tags;
+    if (isFavorite !== undefined) outfit.isFavorite = isFavorite;
+
+    await outfit.save();
+    const populated = await outfit.populate('items');
+    res.json(populated);
 }
-const deleteOutfit = async (req:any, res:any) => {
-    res.json({message: `Deleting outfit with id ${req.params.id}.`})
+
+const deleteOutfit = async (req: any, res: any) => {
+    const outfit = await Outfit.findByIdAndDelete(req.params.id);
+    if (!outfit) return res.status(404).json({ message: 'Outfit not found.' });
+    res.json({ message: 'Outfit deleted successfully.' });
 }
 
 export {createOutfit, getOutfit, getAllOutfits, updateOutfit, deleteOutfit};
