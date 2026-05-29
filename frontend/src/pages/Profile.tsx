@@ -1,24 +1,28 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '@clerk/clerk-react'
 import ClothingCard from '../components/ui/ClothingCard'
 import OutfitCard from '../components/ui/OutfitCard'
-import { getAllOutfits, TEST_USER_ID, type Outfit } from '../services/outfitApi'
+import { getAllOutfits, type Outfit } from '../services/outfitApi'
 import { getAllClothes, type ClothingItem } from '../services/clothingApi'
 
 export default function Profile() {
+  const { userId, getToken } = useAuth()
   const [favoriteOutfits, setFavoriteOutfits] = useState<Outfit[]>([])
   const [clothes, setClothes] = useState<ClothingItem[]>([])
 
   useEffect(() => {
-    getAllOutfits(TEST_USER_ID)
+    if (!userId) return
+    getAllOutfits(userId, getToken)
       .then(outfits => setFavoriteOutfits(outfits.filter(o => o.isFavorite)))
       .catch(() => {})
-  }, [])
+  }, [userId])
 
   useEffect(() => {
-    getAllClothes(TEST_USER_ID)
+    if (!userId) return
+    getAllClothes(userId, getToken)
       .then(setClothes)
       .catch(() => {})
-  }, [])
+  }, [userId])
 
   return (
     <div className="px-6 py-8 flex flex-col gap-8 max-w-200 mx-auto w-full">

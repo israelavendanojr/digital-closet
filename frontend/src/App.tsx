@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
 import TopNav from './components/layout/TopNav'
 
 import Home from './pages/Home'
@@ -12,23 +13,41 @@ import UploadConfirmation from './pages/UploadConfirmation'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
 import ClothingDetail from './pages/ClothingDetail'
+import SignInPage from './pages/SignIn'
+import SignUpPage from './pages/SignUp'
 
 function App() {
   return (
     <BrowserRouter>
-      <TopNav />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/clothes" element={<LooseClothes />} />
-        <Route path="/clothes/:id" element={<ClothingDetail />} />
-        <Route path="/outfits" element={<SavedOutfits />} />
-        <Route path="/outfits/new" element={<SavedOutfitCreation />} />
-        <Route path="/outfits/:id" element={<SavedOutfitDetail />} />
-        <Route path="/upload" element={<Upload />} />
-        <Route path="/upload/tags" element={<UploadTags />} />
-        <Route path="/upload/confirm" element={<UploadConfirmation />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/sign-in/*" element={<SignInPage />} />
+        <Route path="/sign-up/*" element={<SignUpPage />} />
+        <Route
+          path="/*"
+          element={
+            <>
+              <SignedIn>
+                <TopNav />
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/clothes" element={<LooseClothes />} />
+                  <Route path="/clothes/:id" element={<ClothingDetail />} />
+                  <Route path="/outfits" element={<SavedOutfits />} />
+                  <Route path="/outfits/new" element={<SavedOutfitCreation />} />
+                  <Route path="/outfits/:id" element={<SavedOutfitDetail />} />
+                  <Route path="/upload" element={<Upload />} />
+                  <Route path="/upload/tags" element={<UploadTags />} />
+                  <Route path="/upload/confirm" element={<UploadConfirmation />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/settings" element={<Settings />} />
+                </Routes>
+              </SignedIn>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
+            </>
+          }
+        />
       </Routes>
     </BrowserRouter>
   )

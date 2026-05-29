@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IOutfit extends Document {
-  userId: mongoose.Types.ObjectId;
+  userId: string;
   name: string;
   items: mongoose.Types.ObjectId[];
   tags: string[];
@@ -10,7 +10,7 @@ export interface IOutfit extends Document {
 }
 
 const OutfitSchema = new Schema<IOutfit>({
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: String, required: true },
   name:   { type: String, required: true },
   items:  [{ type: Schema.Types.ObjectId, ref: 'ClothingItem' }],
   tags:   [{ type: String }],

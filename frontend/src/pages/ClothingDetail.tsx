@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useAuth } from '@clerk/clerk-react'
 import ImageDropzone from '../components/ui/ImageDropzone'
 import TagInput from '../components/ui/TagInput'
 import Button from '../components/ui/Button'
@@ -29,6 +30,7 @@ const BACKEND_TO_FRONTEND: Record<ClothingItem['category'], CategoryLabel> = {
 export default function ClothingDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { getToken } = useAuth()
 
   const [loadingItem, setLoadingItem] = useState(true)
   const [fetchError, setFetchError] = useState<string | null>(null)
@@ -46,7 +48,7 @@ export default function ClothingDetail() {
 
   useEffect(() => {
     if (!id) return
-    getClothingItem(id)
+    getClothingItem(id, getToken)
       .then(item => {
         setName(item.name)
         setCategory(BACKEND_TO_FRONTEND[item.category])
@@ -72,7 +74,7 @@ export default function ClothingDetail() {
       formData.append('category', toBackendCategory(category as Category))
       formData.append('tags', JSON.stringify(tags))
       if (newFile) formData.append('image', newFile)
-      await updateClothing(id, formData)
+      await updateClothing(id, formData, getToken)
       navigate('/clothes')
     } catch (err: any) {
       setSaveError(err.message)
@@ -84,7 +86,7 @@ export default function ClothingDetail() {
     if (!id) return
     setDeleting(true)
     try {
-      await deleteClothing(id)
+      await deleteClothing(id, getToken)
       navigate('/clothes')
     } catch (err: any) {
       setSaveError(err.message)

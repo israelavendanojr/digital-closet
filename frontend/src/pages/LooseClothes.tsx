@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@clerk/clerk-react'
 import CategoryTabs, { type Category } from '../components/ui/CategoryTabs'
 import ClothingCard from '../components/ui/ClothingCard'
 import Button from '../components/ui/Button'
-import { getAllClothes, toBackendCategory, TEST_USER_ID, type ClothingItem } from '../services/clothingApi'
+import { getAllClothes, toBackendCategory, type ClothingItem } from '../services/clothingApi'
 
 export default function LooseClothes() {
   const navigate = useNavigate()
+  const { userId, getToken } = useAuth()
   const [category, setCategory] = useState<Category>('Tops')
   const [filterOpen, setFilterOpen] = useState(false)
   const [allItems, setAllItems] = useState<ClothingItem[]>([])
@@ -14,11 +16,12 @@ export default function LooseClothes() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    getAllClothes(TEST_USER_ID)
+    if (!userId) return
+    getAllClothes(userId, getToken)
       .then(setAllItems)
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
-  }, [])
+  }, [userId])
 
   const items = allItems.filter(item => item.category === toBackendCategory(category))
 

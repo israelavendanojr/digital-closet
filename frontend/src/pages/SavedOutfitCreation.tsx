@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@clerk/clerk-react'
 import Button from '../components/ui/Button'
 import { SlotView, cycle, MAIN_SLOTS, type MainSlot } from '../components/ui/OutfitBuilder'
-import { getAllClothes, TEST_USER_ID, type ClothingItem } from '../services/clothingApi'
+import { getAllClothes, type ClothingItem } from '../services/clothingApi'
 import { createOutfit } from '../services/outfitApi'
 
 export default function SavedOutfitCreation() {
   const navigate = useNavigate()
+  const { userId, getToken } = useAuth()
   const [clothingByCategory, setClothingByCategory] = useState<Record<string, ClothingItem[]>>({})
   const [loading, setLoading] = useState(true)
   const [slotIndex, setSlotIndex] = useState<Record<MainSlot, number>>({
@@ -18,7 +20,8 @@ export default function SavedOutfitCreation() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    getAllClothes(TEST_USER_ID)
+    if (!userId) return
+    getAllClothes(userId, getToken)
       .then(allItems => {
         const byCategory: Record<string, ClothingItem[]> = {}
         for (const item of allItems) {
@@ -29,7 +32,7 @@ export default function SavedOutfitCreation() {
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
-  }, [])
+  }, [userId])
 
   function moveSlot(cat: MainSlot, dir: 1 | -1) {
     const items = clothingByCategory[cat] ?? []
@@ -70,7 +73,7 @@ export default function SavedOutfitCreation() {
       for (const idx of accessorySlots) {
         if (idx !== -1 && accessories[idx]) selectedIds.push(accessories[idx]._id)
       }
-      const outfit = await createOutfit({ userId: TEST_USER_ID, name, items: selectedIds })
+      const outfit = await createOutfit({ userId: userId!, name, items: selectedIds }, getToken)
       navigate(`/outfits/${outfit._id}`)
     } catch (err: any) {
       setError(err.message)

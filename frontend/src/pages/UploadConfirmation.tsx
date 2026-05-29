@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useAuth } from '@clerk/clerk-react'
 import TagChip from '../components/ui/TagChip'
 import Button from '../components/ui/Button'
-import { createClothing, TEST_USER_ID, toBackendCategory } from '../services/clothingApi'
+import { createClothing, toBackendCategory } from '../services/clothingApi'
 import type { Category } from '../components/ui/CategoryTabs'
 
 export default function UploadConfirmation() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { userId, getToken } = useAuth()
   const state = location.state as { preview?: string; label?: string; tags?: string[]; category?: string; file?: File } | null
   const { preview, label = 'Unnamed item', tags = [], category = 'Tops', file } = state ?? {}
   const [loading, setLoading] = useState(false)
@@ -18,11 +20,11 @@ export default function UploadConfirmation() {
     try {
       const formData = new FormData()
       formData.append('image', file)
-      formData.append('userId', TEST_USER_ID)
+      formData.append('userId', userId!)
       formData.append('name', label)
       formData.append('category', toBackendCategory(category as Category))
       formData.append('tags', JSON.stringify(tags))
-      await createClothing(formData)
+      await createClothing(formData, getToken)
       navigate('/clothes')
     } catch (err) {
       console.error(err)

@@ -1,21 +1,24 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@clerk/clerk-react'
 import OutfitCard from '../components/ui/OutfitCard'
 import Button from '../components/ui/Button'
-import { getAllOutfits, TEST_USER_ID, type Outfit } from '../services/outfitApi'
+import { getAllOutfits, type Outfit } from '../services/outfitApi'
 
 export default function SavedOutfits() {
   const navigate = useNavigate()
+  const { userId, getToken } = useAuth()
   const [outfits, setOutfits] = useState<Outfit[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    getAllOutfits(TEST_USER_ID)
+    if (!userId) return
+    getAllOutfits(userId, getToken)
       .then(setOutfits)
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
-  }, [])
+  }, [userId])
 
   if (loading) return <p className="px-6 py-8 text-text-muted">Loading...</p>
   if (error) return <p className="px-6 py-8 text-red-500">{error}</p>
