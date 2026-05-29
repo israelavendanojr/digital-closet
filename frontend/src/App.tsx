@@ -12,6 +12,7 @@ import UploadTags from './pages/UploadTags'
 import UploadConfirmation from './pages/UploadConfirmation'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
+import EditProfile from './pages/EditProfile'
 import ClothingDetail from './pages/ClothingDetail'
 import SignInPage from './pages/SignIn'
 import SignUpPage from './pages/SignUp'
@@ -41,6 +42,7 @@ function App() {
                   <Route path="/upload/confirm" element={<UploadConfirmation />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/settings/edit-profile" element={<EditProfile />} />
                 </Routes>
               </SignedIn>
               <SignedOut>
