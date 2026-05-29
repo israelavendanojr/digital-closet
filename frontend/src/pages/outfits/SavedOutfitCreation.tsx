@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
-import Button from '../components/ui/Button'
-import { SlotView, cycle, MAIN_SLOTS, type MainSlot } from '../components/ui/OutfitBuilder'
-import { getAllClothes, type ClothingItem } from '../services/clothingApi'
-import { createOutfit } from '../services/outfitApi'
+import Button from '../../components/ui/Button'
+import { SlotView, cycle, MAIN_SLOTS, type MainSlot } from '../../components/ui/OutfitBuilder'
+import { getAllClothes, type ClothingItem } from '../../services/clothingApi'
+import { createOutfit } from '../../services/outfitApi'
 
 export default function SavedOutfitCreation() {
   const navigate = useNavigate()

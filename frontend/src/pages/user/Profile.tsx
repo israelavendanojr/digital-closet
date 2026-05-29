@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useAuth, useUser } from '@clerk/clerk-react'
-import ClothingCard from '../components/ui/ClothingCard'
-import OutfitCard from '../components/ui/OutfitCard'
-import { getAllOutfits, type Outfit } from '../services/outfitApi'
-import { getAllClothes, type ClothingItem } from '../services/clothingApi'
+import ClothingCard from '../../components/ui/ClothingCard'
+import OutfitCard from '../../components/ui/OutfitCard'
+import { getAllOutfits, type Outfit } from '../../services/outfitApi'
+import { getAllClothes, type ClothingItem } from '../../services/clothingApi'
 
 export default function Profile() {
   const { userId, getToken } = useAuth()

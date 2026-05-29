@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
-import CategoryTabs, { type Category } from '../components/ui/CategoryTabs'
-import ClothingCard from '../components/ui/ClothingCard'
-import Button from '../components/ui/Button'
-import { getAllClothes, toBackendCategory, type ClothingItem } from '../services/clothingApi'
+import CategoryTabs, { type Category } from '../../components/ui/CategoryTabs'
+import ClothingCard from '../../components/ui/ClothingCard'
+import Button from '../../components/ui/Button'
+import { getAllClothes, toBackendCategory, type ClothingItem } from '../../services/clothingApi'
 
 export default function LooseClothes() {
   const navigate = useNavigate()

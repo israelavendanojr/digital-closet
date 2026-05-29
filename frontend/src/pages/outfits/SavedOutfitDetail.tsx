@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
-import Button from '../components/ui/Button'
-import TagInput from '../components/ui/TagInput'
-import { SlotView, cycle, MAIN_SLOTS, type MainSlot } from '../components/ui/OutfitBuilder'
-import { getAllClothes, type ClothingItem } from '../services/clothingApi'
-import { getOutfit, updateOutfit, deleteOutfit, type Outfit } from '../services/outfitApi'
+import Button from '../../components/ui/Button'
+import TagInput from '../../components/ui/TagInput'
+import { SlotView, cycle, MAIN_SLOTS, type MainSlot } from '../../components/ui/OutfitBuilder'
+import { getAllClothes, type ClothingItem } from '../../services/clothingApi'
+import { getOutfit, updateOutfit, deleteOutfit, type Outfit } from '../../services/outfitApi'
 
 const SUGGESTIONS = ['casual', 'formal', 'winter', 'summer', 'vintage', 'y2k', 'chic', 'work']
 

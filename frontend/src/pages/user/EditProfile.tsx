@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react'
 import { useUser } from '@clerk/clerk-react'
 import { useNavigate } from 'react-router-dom'
-import Button from '../components/ui/Button'
-import { cn } from '../lib/cn'
+import Button from '../../components/ui/Button'
+import { cn } from '../../lib/cn'
 
 const inputClass = cn(
   'bg-bg-input border border-border rounded text-sm px-3 py-2.5 w-full',

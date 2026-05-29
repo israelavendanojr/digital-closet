@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import TagInput from '../components/ui/TagInput'
-import Button from '../components/ui/Button'
+import TagInput from '../../components/ui/TagInput'
+import Button from '../../components/ui/Button'
 
 const SUGGESTIONS = ['green', 'red', 'chic', 'y2k', 'winter', 'casual', 'formal', 'silly', 'vintage']
 

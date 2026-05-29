@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useSignUp } from '@clerk/clerk-react'
 import { useNavigate, Link } from 'react-router-dom'
-import Button from '../components/ui/Button'
-import { cn } from '../lib/cn'
+import Button from '../../components/ui/Button'
+import { cn } from '../../lib/cn'
 
 type Step = 'register' | 'verify'
 

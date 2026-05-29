@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
-import ImageDropzone from '../components/ui/ImageDropzone'
-import TagInput from '../components/ui/TagInput'
-import Button from '../components/ui/Button'
+import ImageDropzone from '../../components/ui/ImageDropzone'
+import TagInput from '../../components/ui/TagInput'
+import Button from '../../components/ui/Button'
 import {
   getClothingItem,
   updateClothing,
   deleteClothing,
   toBackendCategory,
   type ClothingItem,
-} from '../services/clothingApi'
-import type { Category } from '../components/ui/CategoryTabs'
+} from '../../services/clothingApi'
+import type { Category } from '../../components/ui/CategoryTabs'
 
 const SUGGESTIONS = ['green', 'red', 'chic', 'y2k', 'winter', 'casual', 'formal', 'silly', 'vintage']
 

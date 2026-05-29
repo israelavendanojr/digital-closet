@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
-import OutfitCard from '../components/ui/OutfitCard'
-import Button from '../components/ui/Button'
-import { getAllOutfits, type Outfit } from '../services/outfitApi'
+import OutfitCard from '../../components/ui/OutfitCard'
+import Button from '../../components/ui/Button'
+import { getAllOutfits, type Outfit } from '../../services/outfitApi'
 
 export default function SavedOutfits() {
   const navigate = useNavigate()

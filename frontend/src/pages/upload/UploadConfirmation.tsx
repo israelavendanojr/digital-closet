@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
-import TagChip from '../components/ui/TagChip'
-import Button from '../components/ui/Button'
-import { createClothing, toBackendCategory } from '../services/clothingApi'
-import type { Category } from '../components/ui/CategoryTabs'
+import TagChip from '../../components/ui/TagChip'
+import Button from '../../components/ui/Button'
+import { createClothing, toBackendCategory } from '../../services/clothingApi'
+import type { Category } from '../../components/ui/CategoryTabs'
 
 export default function UploadConfirmation() {
   const navigate = useNavigate()
