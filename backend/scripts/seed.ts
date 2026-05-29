@@ -1,15 +1,14 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
-import User from '../src/models/User.js';
 import ClothingItem from '../src/models/ClothingItem.js';
 
 const MONGO_URL = process.env.MONGO_URI as string;
 
-const SEED_USER = {
-  username: 'testuser',
-  email: 'test@digitalcloset.dev',
-  password: 'testpassword123',
-};
+const clerkUserId = process.argv[2];
+if (!clerkUserId) {
+  console.error('Usage: npx ts-node backend/scripts/seed.ts <clerk_user_id>');
+  process.exit(1);
+}
 
 type Category = 'tops' | 'bottoms' | 'outerwear' | 'footwear' | 'accessories' | 'hatwear';
 
@@ -43,29 +42,17 @@ async function seed() {
   await mongoose.connect(MONGO_URL);
   console.log('Connected to MongoDB');
 
-  // Find or create the test user
-  let user = await User.findOne({ email: SEED_USER.email });
-  if (!user) {
-    user = await User.create(SEED_USER);
-    console.log(`Created test user: ${SEED_USER.email}`);
-  } else {
-    console.log(`Found existing test user: ${SEED_USER.email}`);
-  }
-
-  // Clear existing items for this user and re-insert
-  const deleted = await ClothingItem.deleteMany({ userId: user._id });
+  // Clear existing items for this Clerk user and re-insert
+  const deleted = await ClothingItem.deleteMany({ userId: clerkUserId });
   if (deleted.deletedCount > 0) {
     console.log(`Cleared ${deleted.deletedCount} existing items`);
   }
 
-  const items = CLOTHING_ITEMS.map(item => ({ ...item, userId: user!._id }));
+  const items = CLOTHING_ITEMS.map(item => ({ ...item, userId: clerkUserId }));
   await ClothingItem.insertMany(items);
-  console.log(`Inserted ${items.length} clothing items`);
+  console.log(`Inserted ${items.length} clothing items for Clerk user: ${clerkUserId}`);
 
   console.log('\n--- Done! ---');
-  console.log(`Test user ID: ${user._id}`);
-  console.log('\nPaste this into frontend/src/services/clothingApi.ts:');
-  console.log(`  export const TEST_USER_ID = '${user._id}'`);
 
   await mongoose.disconnect();
 }
