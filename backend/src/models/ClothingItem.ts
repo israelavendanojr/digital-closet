@@ -6,7 +6,7 @@ import mongoose, { Schema, Document } from 'mongoose';
  * - Collection: a group of MongoDB documents, similar to a table in relational databases
  */
 export interface IClothingItem extends Document {
-  userId: mongoose.Types.ObjectId;
+  userId: string;
   name: string;
   category: 'tops' | 'bottoms' | 'outerwear' | 'footwear' | 'accessories' | 'hatwear';
   tags: string[];
@@ -18,7 +18,7 @@ export interface IClothingItem extends Document {
  * Define the ClothingItemSchema using Mongoose's Schema class, which describes the structure of the documents in the "ClothingItem" collection.
  */
 const ClothingItemSchema = new Schema<IClothingItem>({
-  userId:   { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  userId:   { type: String, required: true },
   name:     { type: String, required: true },
   category: { type: String, enum: ['tops','bottoms','outerwear','footwear','accessories','hatwear'], required: true },
   tags:     [{ type: String }],

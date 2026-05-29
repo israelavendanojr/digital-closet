@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import Button from '../components/ui/Button'
-import TagInput from '../components/ui/TagInput'
-import { SlotView, cycle, MAIN_SLOTS, type MainSlot } from '../components/ui/OutfitBuilder'
-import { getAllClothes, TEST_USER_ID, type ClothingItem } from '../services/clothingApi'
-import { getOutfit, updateOutfit, deleteOutfit, type Outfit } from '../services/outfitApi'
+import { useAuth } from '@clerk/clerk-react'
+import Button from '../../components/ui/Button'
+import TagInput from '../../components/ui/TagInput'
+import { SlotView, cycle, MAIN_SLOTS, type MainSlot } from '../../components/ui/OutfitBuilder'
+import { getAllClothes, type ClothingItem } from '../../services/clothingApi'
+import { getOutfit, updateOutfit, deleteOutfit, type Outfit } from '../../services/outfitApi'
 
 const SUGGESTIONS = ['casual', 'formal', 'winter', 'summer', 'vintage', 'y2k', 'chic', 'work']
 
 export default function SavedOutfitDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { userId, getToken } = useAuth()
 
   const [outfit, setOutfit] = useState<Outfit | null>(null)
   const [clothingByCategory, setClothingByCategory] = useState<Record<string, ClothingItem[]>>({})
@@ -35,7 +37,8 @@ export default function SavedOutfitDetail() {
 
   useEffect(() => {
     if (!id) return
-    Promise.all([getOutfit(id), getAllClothes(TEST_USER_ID)])
+    if (!userId) return
+    Promise.all([getOutfit(id, getToken), getAllClothes(userId, getToken)])
       .then(([fetchedOutfit, allItems]) => {
         setOutfit(fetchedOutfit)
         setName(fetchedOutfit.name)
@@ -114,7 +117,7 @@ export default function SavedOutfitDetail() {
       for (const idx of accessorySlots) {
         if (idx !== -1 && accessories[idx]) selectedIds.push(accessories[idx]._id)
       }
-      await updateOutfit(id, { name, items: selectedIds, tags, isFavorite })
+      await updateOutfit(id, { name, items: selectedIds, tags, isFavorite }, getToken)
       navigate('/outfits')
     } catch (err: any) {
       setSaveError(err.message)
@@ -126,7 +129,7 @@ export default function SavedOutfitDetail() {
     if (!id) return
     setDeleting(true)
     try {
-      await deleteOutfit(id)
+      await deleteOutfit(id, getToken)
       navigate('/outfits')
     } catch (err: any) {
       setSaveError(err.message)

@@ -12,14 +12,14 @@ A full-stack MERN application that catalogues your wardrobe. Can upload clothing
 |---|---|
 | Frontend | React 19, TypeScript, Vite, Tailwind CSS |
 | Routing | React Router v7 |
-| Backend | Node.js, Express *(in progress)* |
-| Database | MongoDB Atlas *(in progress)* |
+| Backend | Node.js, Express |
+| Database | MongoDB Atlas |
  
 ## Team
  
 | Member | Role |
 |---|---|
-| Israel | Frontend |
+| Israel | Frontend / Backend |
 | Ashley | Backend |
 | Lawson | Database |
 | Harper | UI/UX |

@@ -1,7 +1,3 @@
-import { TEST_USER_ID } from './clothingApi'
-
-export { TEST_USER_ID }
-
 export interface OutfitItem {
   _id: string
   name: string
@@ -35,22 +31,28 @@ export interface UpdateOutfitData {
   isFavorite?: boolean
 }
 
-export async function getAllOutfits(userId: string): Promise<Outfit[]> {
-  const res = await fetch(`/api/outfits/user/${userId}`)
+async function authHeader(getToken: () => Promise<string | null>): Promise<HeadersInit> {
+  const token = await getToken()
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+export async function getAllOutfits(userId: string, getToken: () => Promise<string | null>): Promise<Outfit[]> {
+  const res = await fetch(`/api/outfits/user/${userId}`, { headers: await authHeader(getToken) })
   if (!res.ok) throw new Error(`Failed to fetch outfits: ${res.status}`)
   return res.json()
 }
 
-export async function getOutfit(id: string): Promise<Outfit> {
-  const res = await fetch(`/api/outfits/${id}`)
+export async function getOutfit(id: string, getToken: () => Promise<string | null>): Promise<Outfit> {
+  const res = await fetch(`/api/outfits/${id}`, { headers: await authHeader(getToken) })
   if (!res.ok) throw new Error(`Failed to fetch outfit: ${res.status}`)
   return res.json()
 }
 
-export async function createOutfit(data: CreateOutfitData): Promise<Outfit> {
+export async function createOutfit(data: CreateOutfitData, getToken: () => Promise<string | null>): Promise<Outfit> {
+  const token = await getToken()
   const res = await fetch('/api/outfits/', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: JSON.stringify({
       userId: data.userId,
       name: data.name,
@@ -63,17 +65,18 @@ export async function createOutfit(data: CreateOutfitData): Promise<Outfit> {
   return res.json()
 }
 
-export async function updateOutfit(id: string, data: UpdateOutfitData): Promise<Outfit> {
+export async function updateOutfit(id: string, data: UpdateOutfitData, getToken: () => Promise<string | null>): Promise<Outfit> {
+  const token = await getToken()
   const res = await fetch(`/api/outfits/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: JSON.stringify(data),
   })
   if (!res.ok) throw new Error(`Failed to update outfit: ${res.status}`)
   return res.json()
 }
 
-export async function deleteOutfit(id: string): Promise<void> {
-  const res = await fetch(`/api/outfits/${id}`, { method: 'DELETE' })
+export async function deleteOutfit(id: string, getToken: () => Promise<string | null>): Promise<void> {
+  const res = await fetch(`/api/outfits/${id}`, { method: 'DELETE', headers: await authHeader(getToken) })
   if (!res.ok) throw new Error(`Failed to delete outfit: ${res.status}`)
 }

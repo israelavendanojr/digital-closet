@@ -1,71 +1,58 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
-import User from '../src/models/User.js';
 import ClothingItem from '../src/models/ClothingItem.js';
 
 const MONGO_URL = process.env.MONGO_URI as string;
 
-const SEED_USER = {
-  username: 'testuser',
-  email: 'test@digitalcloset.dev',
-  password: 'testpassword123',
-};
+const clerkUserId = process.argv[2];
+if (!clerkUserId) {
+  console.error('Usage: npx ts-node backend/scripts/seed.ts <clerk_user_id>');
+  process.exit(1);
+}
 
 type Category = 'tops' | 'bottoms' | 'outerwear' | 'footwear' | 'accessories' | 'hatwear';
 
 const CLOTHING_ITEMS: { name: string; category: Category; tags: string[]; imageUrl: string }[] = [
   // Tops
-  { name: 'Black Collar Shirt',    category: 'tops',        tags: ['collar', 'formal'],              imageUrl: '/images/black_collar.avif' },
-  { name: 'Burgundy Tee',          category: 'tops',        tags: ['tee', 'casual'],                 imageUrl: '/images/burgunry_tee.jpeg' },
-  { name: 'Uniqlo Airism Black',   category: 'tops',        tags: ['airism', 'uniqlo', 'casual'],    imageUrl: '/images/uniqlo_airism_black.avif' },
-  { name: 'Uniqlo Airism White',   category: 'tops',        tags: ['airism', 'uniqlo', 'casual'],    imageUrl: '/images/uniqlo_airism_white.avif' },
+  { name: 'Black Collar Shirt',    category: 'tops',        tags: ['formal'],                        imageUrl: '/images/black_collar.avif' },
+  { name: 'Burgundy Tee',          category: 'tops',        tags: ['casual'],                        imageUrl: '/images/burgunry_tee.jpeg' },
+  { name: 'Uniqlo Airism Black',   category: 'tops',        tags: ['casual', 'everyday'],            imageUrl: '/images/uniqlo_airism_black.avif' },
+  { name: 'Uniqlo Airism White',   category: 'tops',        tags: ['casual', 'everyday'],            imageUrl: '/images/uniqlo_airism_white.avif' },
   // Bottoms
-  { name: 'Dune Pant',             category: 'bottoms',     tags: ['pants', 'casual'],               imageUrl: '/images/dune_pant.jpg' },
-  { name: 'Light Wash Jeans',      category: 'bottoms',     tags: ['jeans', 'casual', 'denim'],      imageUrl: '/images/light_wash_jeans.avif' },
-  { name: 'Vintage Wash Jeans',    category: 'bottoms',     tags: ['jeans', 'vintage', 'denim'],     imageUrl: '/images/vintage_wash_jeans.jpg' },
+  { name: 'Dune Pant',             category: 'bottoms',     tags: ['casual'],                        imageUrl: '/images/dune_pant.jpg' },
+  { name: 'Light Wash Jeans',      category: 'bottoms',     tags: ['casual', 'denim'],               imageUrl: '/images/light_wash_jeans.avif' },
+  { name: 'Vintage Wash Jeans',    category: 'bottoms',     tags: ['vintage', 'denim'],              imageUrl: '/images/vintage_wash_jeans.jpg' },
   // Outerwear
-  { name: 'Leather Jacket',        category: 'outerwear',   tags: ['jacket', 'leather'],             imageUrl: '/images/leather_jacket.avif' },
-  { name: 'Olive Sweater',         category: 'outerwear',   tags: ['sweater', 'knit'],               imageUrl: '/images/olive_sweater.jpg' },
-  { name: 'Petrol Jacket',         category: 'outerwear',   tags: ['jacket', 'casual'],              imageUrl: '/images/petrol_jacket.jpg' },
+  { name: 'Leather Jacket',        category: 'outerwear',   tags: ['casual', 'leather'],             imageUrl: '/images/leather_jacket.avif' },
+  { name: 'Olive Sweater',         category: 'outerwear',   tags: ['casual', 'knit'],                imageUrl: '/images/olive_sweater.jpg' },
+  { name: 'Petrol Jacket',         category: 'outerwear',   tags: ['casual', 'streetwear'],          imageUrl: '/images/petrol_jacket.jpg' },
   // Footwear
-  { name: 'Brown Chelsea Boots',   category: 'footwear',    tags: ['boots', 'chelsea', 'leather'],   imageUrl: '/images/brown_chelsea.webp' },
-  { name: 'Black Loafers',         category: 'footwear',    tags: ['loafers', 'formal'],             imageUrl: '/images/loafer_black.jpg' },
-  { name: 'Onika',                 category: 'footwear',    tags: ['sneakers'],                      imageUrl: '/images/onika.jpg' },
+  { name: 'Brown Chelsea Boots',   category: 'footwear',    tags: ['formal', 'leather', 'boots'],    imageUrl: '/images/brown_chelsea.webp' },
+  { name: 'Black Loafers',         category: 'footwear',    tags: ['formal', 'leather'],             imageUrl: '/images/loafer_black.jpg' },
+  { name: 'Onika',                 category: 'footwear',    tags: ['casual', 'sneakers'],            imageUrl: '/images/onika.jpg' },
   // Headwear
-  { name: 'Black Cap',             category: 'hatwear',     tags: ['cap', 'casual'],                 imageUrl: '/images/black_cap.avif' },
-  { name: 'Yankees Grey Cap',      category: 'hatwear',     tags: ['cap', 'yankees'],                imageUrl: '/images/yankee_grey.webp' },
+  { name: 'Black Cap',             category: 'hatwear',     tags: ['casual', 'streetwear'],          imageUrl: '/images/black_cap.avif' },
+  { name: 'Yankees Grey Cap',      category: 'hatwear',     tags: ['casual', 'streetwear'],          imageUrl: '/images/yankee_grey.webp' },
   // Accessories
-  { name: 'Silver Bracelet',       category: 'accessories', tags: ['silver', 'jewelry'],             imageUrl: '/images/bracelet_silver.webp' },
-  { name: 'Silver Necklace',       category: 'accessories', tags: ['silver', 'jewelry'],             imageUrl: '/images/necklace_silver.png' },
+  { name: 'Silver Bracelet',       category: 'accessories', tags: ['casual', 'formal'],              imageUrl: '/images/bracelet_silver.webp' },
+  { name: 'Silver Necklace',       category: 'accessories', tags: ['casual', 'formal'],              imageUrl: '/images/necklace_silver.png' },
 ];
 
 async function seed() {
   await mongoose.connect(MONGO_URL);
   console.log('Connected to MongoDB');
 
-  // Find or create the test user
-  let user = await User.findOne({ email: SEED_USER.email });
-  if (!user) {
-    user = await User.create(SEED_USER);
-    console.log(`Created test user: ${SEED_USER.email}`);
-  } else {
-    console.log(`Found existing test user: ${SEED_USER.email}`);
-  }
-
-  // Clear existing items for this user and re-insert
-  const deleted = await ClothingItem.deleteMany({ userId: user._id });
+  // Clear existing items for this Clerk user and re-insert
+  const deleted = await ClothingItem.deleteMany({ userId: clerkUserId });
   if (deleted.deletedCount > 0) {
     console.log(`Cleared ${deleted.deletedCount} existing items`);
   }
 
-  const items = CLOTHING_ITEMS.map(item => ({ ...item, userId: user!._id }));
+  const items = CLOTHING_ITEMS.map(item => ({ ...item, userId: clerkUserId }));
   await ClothingItem.insertMany(items);
-  console.log(`Inserted ${items.length} clothing items`);
+  console.log(`Inserted ${items.length} clothing items for Clerk user: ${clerkUserId}`);
 
   console.log('\n--- Done! ---');
-  console.log(`Test user ID: ${user._id}`);
-  console.log('\nPaste this into frontend/src/services/clothingApi.ts:');
-  console.log(`  export const TEST_USER_ID = '${user._id}'`);
 
   await mongoose.disconnect();
 }

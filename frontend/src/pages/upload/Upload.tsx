@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import ImageDropzone from '../components/ui/ImageDropzone'
-import Button from '../components/ui/Button'
+import ImageDropzone from '../../components/ui/ImageDropzone'
+import Button from '../../components/ui/Button'
 
 export default function Upload() {
   const navigate = useNavigate()

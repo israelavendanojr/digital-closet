@@ -1,11 +1,16 @@
 interface TagChipProps {
   label: string
   onRemove?: () => void
+  active?: boolean
+  onClick?: () => void
 }
 
-export default function TagChip({ label, onRemove }: TagChipProps) {
+export default function TagChip({ label, onRemove, active, onClick }: TagChipProps) {
   return (
-    <span className="inline-flex items-center gap-1 bg-border text-text text-[13px] px-2.5 py-1 rounded-pill">
+    <span
+      className={`inline-flex items-center gap-1 border text-[13px] px-2.5 py-1 rounded-pill transition-colors duration-150 ${onClick ? 'cursor-pointer' : ''} ${active ? 'bg-text text-bg border-text' : 'bg-transparent border-border text-text-muted'}`}
+      onClick={onClick}
+    >
       {label}
       {onRemove && (
         <button
