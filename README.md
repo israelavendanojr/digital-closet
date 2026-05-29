@@ -1,61 +1,85 @@
 # Digital Closet
- 
-A full-stack MERN application that catalogues your wardrobe. Can upload clothing photos, tag and categorize items, and build saved outfits.
- 
+
+A full-stack MERN application that catalogues your wardrobe. Upload clothing photos, tag and categorize items, and build saved outfits.
+
 **CSCI 342 – Web Scripting | Spring 2026**
- 
+
 ---
- 
+
 ## Tech Stack
- 
+
 | | |
 |---|---|
 | Frontend | React 19, TypeScript, Vite, Tailwind CSS |
 | Routing | React Router v7 |
-| Backend | Node.js, Express |
-| Database | MongoDB Atlas |
- 
+| Auth | Clerk |
+| Backend | Node.js, Express 5, tsx |
+| Database | MongoDB Atlas, Mongoose |
+| File Uploads | Multer |
+
 ## Team
- 
+
 | Member | Role |
 |---|---|
 | Israel | Frontend / Backend |
 | Ashley | Backend |
 | Lawson | Database |
 | Harper | UI/UX |
- 
+
 ---
- 
+
 ## Setup
- 
+
 **Prerequisites:** Node.js v18+
- 
+
 ```bash
 git clone https://github.com/israelavendanojr/digital-closet.git
-cd digital-closet/frontend
-npm install
 ```
- 
-## Running Locally
- 
+
+**Frontend** — create `frontend/.env`:
+```
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+```
+
+**Backend** — create `backend/.env`:
+```
+MONGO_URI=your_mongodb_connection_string
+CLERK_SECRET_KEY=your_clerk_secret_key
+```
+
+Install dependencies:
 ```bash
-# Frontend
-cd frontend
-npm run dev        # http://localhost:5173
+cd frontend && npm install
+cd ../backend && npm install
 ```
- 
-> Backend is not yet integrated. The frontend runs fully standalone.
- 
+
+## Running Locally
+
+Both servers must be running. The Vite dev server proxies `/api` and `/uploads` to the backend.
+
+```bash
+# Backend (port 8080)
+cd backend
+npm run dev
+
+# Frontend (port 5173)
+cd frontend
+npm run dev
+```
+
 ---
- 
+
 ## Pages & Routes
- 
-All navigation is client-side via React Router. `TopNav` is rendered on every page.
- 
+
+All app routes require authentication via Clerk. Unauthenticated users are redirected to `/sign-in`. `TopNav` is rendered on every protected page.
+
 | Route | Page | Description |
 |---|---|---|
+| `/sign-in` | SignIn | Clerk sign-in |
+| `/sign-up` | SignUp | Clerk sign-up |
 | `/` | Home | Main dashboard |
 | `/clothes` | LooseClothes | Browse closet items |
+| `/clothes/:id` | ClothingDetail | View and edit a clothing item |
 | `/outfits` | SavedOutfits | Browse saved outfits |
 | `/outfits/new` | SavedOutfitCreation | Build a new outfit |
 | `/outfits/:id` | SavedOutfitDetail | View a saved outfit |
@@ -64,11 +88,12 @@ All navigation is client-side via React Router. `TopNav` is rendered on every pa
 | `/upload/confirm` | UploadConfirmation | Review before saving |
 | `/profile` | Profile | Account info |
 | `/settings` | Settings | App preferences |
- 
+| `/settings/edit-profile` | EditProfile | Edit profile details |
+
 ---
- 
+
 ## Components
- 
+
 | Component | Description |
 |---|---|
 | `TopNav` | Shared navigation bar |
@@ -76,14 +101,35 @@ All navigation is client-side via React Router. `TopNav` is rendered on every pa
 | `Card` | Base card container |
 | `ClothingCard` | Clothing item with image and tags |
 | `OutfitCard` | Saved outfit card |
+| `OutfitBuilder` | Drag-and-select interface for building outfits |
 | `CategoryTabs` | Filter closet by category |
 | `ImageDropzone` | Drag-and-drop image upload area |
 | `TagChip` | Tag pill/badge display |
 | `TagInput` | Input for adding tags |
- 
+
 ---
- 
+
+## API Routes
+
+All routes are protected by Clerk auth middleware (`requireAuth`). Uploaded images are stored in `backend/uploads/` and served statically for now, will connect to S3 later.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/clothes/user/:userId` | Get all clothing items for a user |
+| POST | `/api/clothes/` | Upload a new clothing item (multipart) |
+| GET | `/api/clothes/:id` | Get a single clothing item |
+| PUT | `/api/clothes/:id` | Update a clothing item |
+| DELETE | `/api/clothes/:id` | Delete a clothing item |
+| GET | `/api/outfits/user/:userId` | Get all outfits for a user |
+| POST | `/api/outfits/` | Create a new outfit |
+| GET | `/api/outfits/:id` | Get a single outfit |
+| PUT | `/api/outfits/:id` | Update an outfit |
+| DELETE | `/api/outfits/:id` | Delete an outfit |
+| GET/POST | `/api/users/...` | User profile management |
+
+---
+
 ## Links
- 
+
 - **Figma:** https://www.figma.com/design/WjEcSV8ckoe3d5Eq7BsqJa/CSCI-342-Group-Project
 - **Primary Notion:** https://www.notion.so/SP26-CSCI-342-Final-Project-Digital-Closet-App-344445435554807ca3f5e325ec764c6f?source=copy_link
