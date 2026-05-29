@@ -11,7 +11,7 @@ export interface ClothingItem {
 }
 
 // Maps frontend Category tab labels to backend enum values
-const CATEGORY_MAP: Record<Category, ClothingItem['category']> = {
+const CATEGORY_MAP: Partial<Record<Category, ClothingItem['category']>> = {
   Tops: 'tops',
   Bottoms: 'bottoms',
   Outerwear: 'outerwear',
@@ -20,7 +20,7 @@ const CATEGORY_MAP: Record<Category, ClothingItem['category']> = {
   Accessories: 'accessories',
 }
 
-export function toBackendCategory(cat: Category): ClothingItem['category'] {
+export function toBackendCategory(cat: Category): ClothingItem['category'] | undefined {
   return CATEGORY_MAP[cat]
 }
 
