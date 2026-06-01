@@ -67,6 +67,28 @@ cd frontend
 npm run dev
 ```
 
+## Testing
+
+Tests use [Vitest](https://vitest.dev/) and React Testing Library. Only when testing, the backend uses an in-memory MongoDB instance (no database connection required).
+
+```bash
+# Frontend
+cd frontend
+npm test
+
+# Backend
+cd backend
+npm test
+```
+
+Additional scripts available in both packages:
+```bash
+npm run test:watch     # re-run on file save
+npm run test:coverage  # generate coverage report
+```
+
+> **Note:** The first `npm test` in the backend downloads a MongoDB binary (~780 MB). Afterwards, runs use the cached binary and are much faster.
+
 ---
 
 ## Pages & Routes
