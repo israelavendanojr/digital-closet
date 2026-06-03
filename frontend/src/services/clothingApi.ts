@@ -36,7 +36,7 @@ export async function getAllClothes(userId: string, getToken: () => Promise<stri
 }
 
 export async function createClothing(formData: FormData, getToken: () => Promise<string | null>): Promise<ClothingItem> {
-  const res = await fetch('/api/clothes/', { method: 'POST', headers: await authHeader(getToken), body: formData })
+  const res = await fetch('/api/clothes', { method: 'POST', headers: await authHeader(getToken), body: formData })
   if (!res.ok) throw new Error(`Failed to create item: ${res.status}`)
   return res.json()
 }
