@@ -15,6 +15,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1059.0",
     "@clerk/express": "^2.1.22",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
