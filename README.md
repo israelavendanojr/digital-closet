@@ -15,7 +15,7 @@ A full-stack MERN application that catalogues your wardrobe. Upload clothing pho
 | Auth | Clerk |
 | Backend | Node.js, Express 5, tsx |
 | Database | MongoDB Atlas, Mongoose |
-| File Uploads | Multer |
+| File Storage | Multer, AWS S3 |
 
 ## Team
 
@@ -45,6 +45,10 @@ VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 ```
 MONGO_URI=your_mongodb_connection_string
 CLERK_SECRET_KEY=your_clerk_secret_key
+AWS_ACCESS_KEY_ID=your_access_key_id
+AWS_SECRET_ACCESS_KEY=your_secret_access_key
+AWS_REGION=your_region
+S3_BUCKET_NAME=your_bucket_name
 ```
 
 Install dependencies:
@@ -55,7 +59,7 @@ cd ../backend && npm install
 
 ## Running Locally
 
-Both servers must be running. The Vite dev server proxies `/api` and `/uploads` to the backend.
+Both servers must be running. The Vite dev server proxies `/api` to the backend.
 
 ```bash
 # Backend (port 8080)
@@ -133,7 +137,7 @@ All app routes require authentication via Clerk. Unauthenticated users are redir
 
 ## API Routes
 
-All routes are protected by Clerk auth middleware (`requireAuth`). Uploaded images are stored in `backend/uploads/` and served statically for now, will connect to S3 later.
+All routes are protected by Clerk auth middleware (`requireAuth`). Uploaded images are stored in AWS S3 and served via public S3 URLs.
 
 | Method | Endpoint | Description |
 |---|---|---|
