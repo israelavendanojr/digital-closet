@@ -11,10 +11,15 @@ vi.mock('@clerk/express', () => ({
 vi.mock('../../middleware/upload.js', () => ({
   default: {
     single: () => (req: any, _res: any, next: any) => {
-      req.file = { filename: 'test.jpg' }
+      req.file = { buffer: Buffer.from(''), mimetype: 'image/jpeg', originalname: 'test.jpg' }
       next()
     },
   },
+}))
+
+vi.mock('../../lib/s3.js', () => ({
+  uploadToS3: vi.fn().mockResolvedValue('/uploads/test.jpg'),
+  deleteFromS3: vi.fn().mockResolvedValue(undefined),
 }))
 
 const { default: clothingRouter } = await import('../../routes/clothingRoutes.js')
