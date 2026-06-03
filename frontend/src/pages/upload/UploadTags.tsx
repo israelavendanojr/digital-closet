@@ -12,19 +12,19 @@ type CategoryLabel = typeof CATEGORIES[number]
 export default function UploadTags() {
   const navigate = useNavigate()
   const location = useLocation()
-  const routeState = location.state as { fileName?: string; file?: File } | null
+  const routeState = location.state as { fileName?: string; file?: File; alreadyProcessed?: boolean } | null
 
   const [preview, setPreview] = useState<string | undefined>(() =>
     routeState?.file ? URL.createObjectURL(routeState.file) : undefined
   )
   const [file, setFile] = useState<File | undefined>(routeState?.file)
-  const [processing, setProcessing] = useState(!!routeState?.file)
+  const [processing, setProcessing] = useState(!!routeState?.file && !routeState.alreadyProcessed)
   const [label, setLabel] = useState(routeState?.fileName?.replace(/\.[^.]+$/, '') ?? '')
   const [tags, setTags] = useState<string[]>([])
   const [category, setCategory] = useState<CategoryLabel>('Tops')
 
   useEffect(() => {
-    if (!routeState?.file) return
+    if (!routeState?.file || routeState.alreadyProcessed) return
     const worker = new BgRemovalWorker()
 
     worker.onmessage = (e: MessageEvent<{ ok: boolean; blob?: Blob }>) => {
@@ -60,8 +60,8 @@ export default function UploadTags() {
             : <div className="text-text-muted text-sm">No image</div>
           }
           {processing && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded">
-              <div className="bg-white rounded-lg px-5 py-3 text-sm font-medium text-gray-800 shadow-lg">
+            <div className="absolute inset-0 flex items-center justify-center bg-text/25 rounded">
+              <div className="bg-bg-card text-text text-sm font-light px-5 py-3 rounded shadow">
                 Removing background…
               </div>
             </div>

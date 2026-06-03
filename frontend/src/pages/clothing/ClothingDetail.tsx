@@ -71,7 +71,7 @@ export default function ClothingDetail() {
     try {
       const formData = new FormData()
       formData.append('name', name)
-      formData.append('category', toBackendCategory(category as Category))
+      formData.append('category', toBackendCategory(category as Category) ?? category)
       formData.append('tags', JSON.stringify(tags))
       if (newFile) formData.append('image', newFile)
       await updateClothing(id, formData, getToken)
