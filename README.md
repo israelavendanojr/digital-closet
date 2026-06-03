@@ -24,7 +24,6 @@ A full-stack MERN application that catalogues your wardrobe. Upload clothing pho
 | Member | Role |
 |---|---|
 | Israel | Frontend / Backend |
-| Ashley | Backend |
 | Lawson | Database |
 | Harper | UI/UX |
 
