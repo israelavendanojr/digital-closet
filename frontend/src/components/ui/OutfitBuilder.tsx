@@ -36,7 +36,7 @@ export function SlotView({ label, item, onPrev, onNext, disabled }: SlotViewProp
       <button
         onClick={onPrev}
         disabled={disabled}
-        className="w-7 h-7 flex items-center justify-center text-text-muted hover:text-text transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none text-base"
+        className="w-9 h-9 flex items-center justify-center text-text hover:text-text transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none text-2xl"
       >
         ‹
       </button>
@@ -57,7 +57,7 @@ export function SlotView({ label, item, onPrev, onNext, disabled }: SlotViewProp
       <button
         onClick={onNext}
         disabled={disabled}
-        className="w-7 h-7 flex items-center justify-center text-text-muted hover:text-text transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none text-base"
+        className="w-9 h-9 flex items-center justify-center text-text hover:text-text transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none text-2xl"
       >
         ›
       </button>
