@@ -16,6 +16,8 @@ A full-stack MERN application that catalogues your wardrobe. Upload clothing pho
 | Backend | Node.js, Express 5, tsx |
 | Database | MongoDB Atlas, Mongoose |
 | File Storage | Multer, AWS S3 |
+| Background Removal | @imgly/background-removal (in-browser, WebAssembly) |
+| Deployment | Vercel (frontend), Render (backend) |
 
 ## Team
 
@@ -152,6 +154,19 @@ All routes are protected by Clerk auth middleware (`requireAuth`). Uploaded imag
 | PUT | `/api/outfits/:id` | Update an outfit |
 | DELETE | `/api/outfits/:id` | Delete an outfit |
 | GET/POST | `/api/users/...` | User profile management |
+
+---
+
+## Deployment
+
+| | URL |
+|---|---|
+| Frontend | https://digital-closet-iota.vercel.app |
+| Backend | https://digital-closet-backend.onrender.com |
+
+The frontend is deployed on Vercel with a proxy rewrite that forwards `/api/*` to the Render backend. The backend is deployed on Render using `npx tsx src/index.ts`.
+
+> **Note:** Render free instances spin down after inactivity — the first request after idle may take ~30 seconds to cold start.
 
 ---
 

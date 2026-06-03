@@ -50,7 +50,7 @@ export async function getOutfit(id: string, getToken: () => Promise<string | nul
 
 export async function createOutfit(data: CreateOutfitData, getToken: () => Promise<string | null>): Promise<Outfit> {
   const token = await getToken()
-  const res = await fetch('/api/outfits/', {
+  const res = await fetch('/api/outfits', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: JSON.stringify({
