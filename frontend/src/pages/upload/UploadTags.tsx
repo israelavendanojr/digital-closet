@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import TagInput from '../../components/ui/TagInput'
 import Button from '../../components/ui/Button'
+import BgRemovalWorker from './bgRemoval.worker?worker'
 
 const SUGGESTIONS = ['green', 'red', 'chic', 'y2k', 'winter', 'casual', 'formal', 'silly', 'vintage']
 
@@ -11,20 +12,60 @@ type CategoryLabel = typeof CATEGORIES[number]
 export default function UploadTags() {
   const navigate = useNavigate()
   const location = useLocation()
-  const state = location.state as { preview?: string; fileName?: string; file?: File } | null
-  const preview = state?.preview
-  const [label, setLabel] = useState(state?.fileName?.replace(/\.[^.]+$/, '') ?? '')
+  const routeState = location.state as { fileName?: string; file?: File } | null
+
+  const [preview, setPreview] = useState<string | undefined>(() =>
+    routeState?.file ? URL.createObjectURL(routeState.file) : undefined
+  )
+  const [file, setFile] = useState<File | undefined>(routeState?.file)
+  const [processing, setProcessing] = useState(!!routeState?.file)
+  const [label, setLabel] = useState(routeState?.fileName?.replace(/\.[^.]+$/, '') ?? '')
   const [tags, setTags] = useState<string[]>([])
   const [category, setCategory] = useState<CategoryLabel>('Tops')
+
+  useEffect(() => {
+    if (!routeState?.file) return
+    const worker = new BgRemovalWorker()
+
+    worker.onmessage = (e: MessageEvent<{ ok: boolean; blob?: Blob }>) => {
+      if (e.data.ok && e.data.blob) {
+        const processed = new File(
+          [e.data.blob],
+          (routeState.fileName ?? 'image').replace(/\.[^.]+$/, '.png'),
+          { type: 'image/png' }
+        )
+        setFile(processed)
+        setPreview(URL.createObjectURL(e.data.blob))
+      }
+      setProcessing(false)
+      worker.terminate()
+    }
+
+    worker.postMessage(routeState.file)
+    return () => worker.terminate()
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview)
+    }
+  }, [preview])
 
   return (
     <div className="px-6 py-8 max-w-200 mx-auto w-full">
       <div className="grid grid-cols-2 gap-10 items-start max-sm:grid-cols-1">
-        <div className="rounded overflow-hidden bg-bg-card aspect-square flex items-center justify-center">
+        <div className="rounded overflow-hidden bg-bg-card aspect-square flex items-center justify-center relative">
           {preview
             ? <img src={preview} alt="Item preview" className="w-full h-full object-contain" />
             : <div className="text-text-muted text-sm">No image</div>
           }
+          {processing && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded">
+              <div className="bg-white rounded-lg px-5 py-3 text-sm font-medium text-gray-800 shadow-lg">
+                Removing background…
+              </div>
+            </div>
+          )}
         </div>
         <div className="flex flex-col gap-6">
           <h1 className="text-2xl font-normal">Name &amp; Tags</h1>
@@ -54,10 +95,10 @@ export default function UploadTags() {
           <div className="flex gap-3 justify-end mt-2">
             <Button variant="ghost" onClick={() => navigate('/upload')}>← Back</Button>
             <Button
-              disabled={!label.trim()}
-              onClick={() => navigate('/upload/confirm', { state: { preview, label, tags, category, file: state?.file } })}
+              disabled={!label.trim() || processing}
+              onClick={() => navigate('/upload/confirm', { state: { preview, label, tags, category, file } })}
             >
-              Next: Confirm
+              {processing ? 'Processing…' : 'Next: Confirm'}
             </Button>
           </div>
         </div>

@@ -8,6 +8,9 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['@imgly/background-removal'],
   },
+  worker: {
+    format: 'es',
+  },
   server: {
     proxy: {
       '/api': 'http://localhost:8080',
