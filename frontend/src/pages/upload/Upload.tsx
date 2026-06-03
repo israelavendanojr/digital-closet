@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ImageDropzone from '../../components/ui/ImageDropzone'
 import Button from '../../components/ui/Button'
@@ -7,6 +7,12 @@ export default function Upload() {
   const navigate = useNavigate()
   const [preview, setPreview] = useState<string | undefined>()
   const [file, setFile] = useState<File | undefined>()
+
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview)
+    }
+  }, [preview])
 
   function handleFile(f: File) {
     setFile(f)
@@ -24,7 +30,7 @@ export default function Upload() {
         <Button variant="ghost" onClick={() => navigate('/')}>Cancel</Button>
         <Button
           disabled={!file}
-          onClick={() => navigate('/upload/tags', { state: { preview, fileName: file?.name, file } })}
+          onClick={() => navigate('/upload/tags', { state: { fileName: file?.name, file } })}
         >
           Next: Add Tags
         </Button>

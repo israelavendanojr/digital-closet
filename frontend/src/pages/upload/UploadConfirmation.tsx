@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
 import TagChip from '../../components/ui/TagChip'
@@ -10,9 +10,18 @@ export default function UploadConfirmation() {
   const navigate = useNavigate()
   const location = useLocation()
   const { userId, getToken } = useAuth()
-  const state = location.state as { preview?: string; label?: string; tags?: string[]; category?: string; file?: File } | null
-  const { preview, label = 'Unnamed item', tags = [], category = 'Tops', file } = state ?? {}
+  const state = location.state as { label?: string; tags?: string[]; category?: string; file?: File } | null
+  const { label = 'Unnamed item', tags = [], category = 'Tops', file } = state ?? {}
+  const [preview] = useState(() => file ? URL.createObjectURL(file) : undefined)
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!file) navigate('/upload', { replace: true })
+  }, [file, navigate])
+
+  useEffect(() => {
+    return () => { if (preview) URL.revokeObjectURL(preview) }
+  }, [preview])
 
   async function handleConfirm() {
     if (!file) return
@@ -22,7 +31,7 @@ export default function UploadConfirmation() {
       formData.append('image', file)
       formData.append('userId', userId!)
       formData.append('name', label)
-      formData.append('category', toBackendCategory(category as Category))
+      formData.append('category', toBackendCategory(category as Category) ?? category)
       formData.append('tags', JSON.stringify(tags))
       await createClothing(formData, getToken)
       navigate('/clothes')
@@ -58,7 +67,7 @@ export default function UploadConfirmation() {
           <div className="flex flex-col gap-2.5 mt-3">
             <Button onClick={handleConfirm} disabled={loading || !file}>{loading ? 'Uploading...' : 'Confirm'}</Button>
             <Button variant="ghost" onClick={() => navigate('/upload')}>Reupload</Button>
-            <Button variant="ghost" onClick={() => navigate('/upload/tags', { state: { preview, label, file } })}>Retake Tags</Button>
+            <Button variant="ghost" onClick={() => navigate('/upload/tags', { state: { label, file, alreadyProcessed: true } })}>Retake Tags</Button>
           </div>
         </div>
       </div>
