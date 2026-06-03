@@ -1,14 +1,13 @@
 
-import fs from 'fs';
-import path from 'path';
 import ClothingItem from '../models/ClothingItem.js';
+import { uploadToS3, deleteFromS3 } from '../lib/s3.js';
 
 const createClothing = async (req: any, res: any) => {
     if (!req.file) {
         return res.status(400).json({ message: 'Image file is required.' });
     }
     const { userId, name, category, tags } = req.body;
-    const imageUrl = `/uploads/${req.file.filename}`;
+    const imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype, req.file.originalname);
     const parsedTags = tags ? JSON.parse(tags) : [];
     const item = new ClothingItem({ userId, name, category, tags: parsedTags, imageUrl });
     await item.save();
@@ -32,10 +31,8 @@ const updateClothes = async (req: any, res: any) => {
     const { name, category, tags } = req.body;
 
     if (req.file) {
-        const oldFilename = item.imageUrl.replace('/uploads/', '');
-        const oldPath = path.join(process.cwd(), 'uploads', oldFilename);
-        fs.unlink(oldPath, (err) => { if (err) console.error('Failed to delete old image:', err); });
-        item.imageUrl = `/uploads/${req.file.filename}`;
+        await deleteFromS3(item.imageUrl);
+        item.imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype, req.file.originalname);
     }
 
     if (name !== undefined) item.name = name;
@@ -49,9 +46,7 @@ const deleteClothes = async (req: any, res: any) => {
     const item = await ClothingItem.findByIdAndDelete(req.params.id);
     if (!item) return res.status(404).json({ message: 'Item not found.' });
 
-    const filename = item.imageUrl.replace('/uploads/', '');
-    const filePath = path.join(process.cwd(), 'uploads', filename);
-    fs.unlink(filePath, (err) => { if (err) console.error('Failed to delete image file:', err); });
+    await deleteFromS3(item.imageUrl);
 
     res.json({ message: 'Item deleted successfully.' });
 }
