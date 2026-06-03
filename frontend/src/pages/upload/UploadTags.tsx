@@ -24,6 +24,10 @@ export default function UploadTags() {
   const [category, setCategory] = useState<CategoryLabel>('Tops')
 
   useEffect(() => {
+    if (!routeState?.file) { navigate('/upload', { replace: true }); return }
+  }, [])
+
+  useEffect(() => {
     if (!routeState?.file || routeState.alreadyProcessed) return
     const worker = new BgRemovalWorker()
 

@@ -16,6 +16,10 @@ export default function UploadConfirmation() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    if (!file) navigate('/upload', { replace: true })
+  }, [file, navigate])
+
+  useEffect(() => {
     return () => { if (preview) URL.revokeObjectURL(preview) }
   }, [preview])
 
