@@ -88,18 +88,26 @@ export default function UploadTags() {
             : <div className="text-text-muted text-sm">No image</div>
           }
           {processing && (
-            <div className="absolute inset-0 flex items-center justify-center bg-text/25 rounded">
-              <div className="bg-bg-card text-text text-sm font-light px-5 py-3 rounded shadow">
-                Removing background…
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-bg-card rounded">
+              <div className="relative w-14 h-14">
+                <div className="absolute inset-0 rounded-full border-4 border-border" />
+                <div className="absolute inset-0 rounded-full border-4 border-t-accent border-r-transparent border-b-transparent border-l-transparent animate-spin" />
               </div>
+              <p className="text-sm text-text-muted font-medium">Removing background…</p>
+            </div>
+          )}
+          {analyzing && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-bg-card/70 rounded">
+              <div className="relative w-14 h-14">
+                <div className="absolute inset-0 rounded-full border-4 border-border" />
+                <div className="absolute inset-0 rounded-full border-4 border-t-accent border-r-transparent border-b-transparent border-l-transparent animate-spin" />
+              </div>
+              <p className="text-sm text-text-muted font-medium">Applying AI autofill…</p>
             </div>
           )}
         </div>
         <div className="flex flex-col gap-6">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-normal">Name &amp; Tags</h1>
-            {analyzing && <span className="text-xs text-text-muted">AI filling…</span>}
-          </div>
+          <h1 className="text-2xl font-normal">Name &amp; Tags</h1>
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-text-muted">Label:</label>
             <input

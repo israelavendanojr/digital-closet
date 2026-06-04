@@ -4,9 +4,10 @@ interface ImageDropzoneProps {
   onFile: (file: File) => void
   preview?: string
   removing?: boolean
+  analyzing?: boolean
 }
 
-export default function ImageDropzone({ onFile, preview, removing }: ImageDropzoneProps) {
+export default function ImageDropzone({ onFile, preview, removing, analyzing }: ImageDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
 
@@ -55,14 +56,25 @@ export default function ImageDropzone({ onFile, preview, removing }: ImageDropzo
       ) : preview ? (
         <div className="group w-full h-full relative">
           <img src={preview} alt="Preview" className="w-full h-full object-contain max-h-[320px] rounded-lg" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="17 8 12 3 7 8" />
-              <line x1="12" y1="3" x2="12" y2="15" />
-            </svg>
-            <span className="text-white text-sm font-medium">Change photo</span>
-          </div>
+          {analyzing && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-bg-card/70 rounded-lg">
+              <div className="relative w-14 h-14">
+                <div className="absolute inset-0 rounded-full border-4 border-border" />
+                <div className="absolute inset-0 rounded-full border-4 border-t-accent border-r-transparent border-b-transparent border-l-transparent animate-spin" />
+              </div>
+              <p className="text-sm text-text-muted font-medium">Applying AI autofill…</p>
+            </div>
+          )}
+          {!analyzing && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              <span className="text-white text-sm font-medium">Change photo</span>
+            </div>
+          )}
         </div>
       ) : (
         <div className="flex flex-col items-center gap-3 px-8 py-12 text-center select-none">

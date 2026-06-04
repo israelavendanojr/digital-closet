@@ -115,14 +115,11 @@ export default function CreateClothingModal({ onClose, onCreated }: CreateClothi
 
         <div className="px-6 py-6">
           <div className="grid grid-cols-2 gap-8 items-start max-sm:grid-cols-1">
-            <ImageDropzone onFile={handleFile} preview={preview} removing={removingBg} />
+            <ImageDropzone onFile={handleFile} preview={preview} removing={removingBg} analyzing={analyzing} />
 
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium text-text-muted">Label:</label>
-                  {analyzing && <span className="text-xs text-text-muted">AI filling…</span>}
-                </div>
+                <label className="text-sm font-medium text-text-muted">Label:</label>
                 <input
                   className="borderless-input"
                   value={name}
