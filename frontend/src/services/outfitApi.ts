@@ -6,6 +6,15 @@ export interface OutfitItem {
   tags: string[]
 }
 
+export interface CanvasLayoutEntry {
+  clothingId: string
+  x: number
+  y: number
+  width: number
+  zIndex: number
+  rotation?: number
+}
+
 export interface Outfit {
   _id: string
   userId: string
@@ -13,6 +22,7 @@ export interface Outfit {
   items: OutfitItem[]
   tags: string[]
   isFavorite: boolean
+  canvasLayout?: CanvasLayoutEntry[]
   createdAt: string
 }
 
@@ -22,6 +32,7 @@ export interface CreateOutfitData {
   items: string[]
   tags?: string[]
   isFavorite?: boolean
+  canvasLayout?: CanvasLayoutEntry[]
 }
 
 export interface UpdateOutfitData {
@@ -29,6 +40,7 @@ export interface UpdateOutfitData {
   items?: string[]
   tags?: string[]
   isFavorite?: boolean
+  canvasLayout?: CanvasLayoutEntry[]
 }
 
 async function authHeader(getToken: () => Promise<string | null>): Promise<HeadersInit> {
@@ -59,6 +71,7 @@ export async function createOutfit(data: CreateOutfitData, getToken: () => Promi
       items: data.items,
       tags: data.tags ?? [],
       isFavorite: data.isFavorite ?? false,
+      canvasLayout: data.canvasLayout ?? [],
     }),
   })
   if (!res.ok) throw new Error(`Failed to create outfit: ${res.status}`)

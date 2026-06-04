@@ -32,6 +32,14 @@ interface ResizeState {
   h0: number
 }
 
+interface RotateState {
+  instanceId: string
+  centerX: number
+  centerY: number
+  startAngle: number
+  startRotation: number
+}
+
 function computeResize(
   corner: Corner, dx: number, dy: number,
   x0: number, y0: number, w0: number, h0: number, minW = 40
@@ -80,6 +88,7 @@ export default function OutfitBuilderCanvas() {
   const canvasRef = useRef<HTMLDivElement>(null)
   const draggingRef = useRef<DragState | null>(null)
   const resizingRef = useRef<ResizeState | null>(null)
+  const rotatingRef = useRef<RotateState | null>(null)
 
   useEffect(() => {
     if (!userId) return
@@ -95,20 +104,46 @@ export default function OutfitBuilderCanvas() {
       setOutfitName(outfit.name)
       setTags(outfit.tags)
       setIsFavorite(outfit.isFavorite)
+
+      let items: CanvasItemData[]
       let z = 1
-      const items: CanvasItemData[] = outfit.items.map((item, i) => {
-        z = i + 2
-        return {
-          instanceId: `${item._id}-${i}`,
-          clothingId: item._id,
-          imageUrl: item.imageUrl,
-          name: item.name,
-          x: 40 + (i % 4) * 160,
-          y: 40 + Math.floor(i / 4) * 180,
-          zIndex: i + 1,
-          width: 140,
-        }
-      })
+
+      if (outfit.canvasLayout && outfit.canvasLayout.length > 0) {
+        // Restore saved canvas layout
+        const itemMap = new Map(outfit.items.map(item => [item._id, item]))
+        items = outfit.canvasLayout.map((entry, i) => {
+          const clothing = itemMap.get(entry.clothingId)
+          z = Math.max(z, entry.zIndex + 1)
+          return {
+            instanceId: `${entry.clothingId}-${i}`,
+            clothingId: entry.clothingId,
+            imageUrl: clothing?.imageUrl ?? '',
+            name: clothing?.name ?? '',
+            x: entry.x,
+            y: entry.y,
+            width: entry.width,
+            zIndex: entry.zIndex,
+            rotation: entry.rotation ?? 0,
+          }
+        })
+      } else {
+        // Fallback: default grid for outfits saved before layout persistence
+        items = outfit.items.map((item, i) => {
+          z = i + 2
+          return {
+            instanceId: `${item._id}-${i}`,
+            clothingId: item._id,
+            imageUrl: item.imageUrl,
+            name: item.name,
+            x: 40 + (i % 4) * 160,
+            y: 40 + Math.floor(i / 4) * 180,
+            zIndex: i + 1,
+            width: 140,
+            rotation: 0,
+          }
+        })
+      }
+
       setMaxZ(z)
       setCanvasItems(items)
     })
@@ -135,6 +170,7 @@ export default function OutfitBuilderCanvas() {
       y: Math.max(0, Math.round(cy)),
       zIndex: newZ,
       width: 140,
+      rotation: 0,
     }])
   }
 
@@ -184,6 +220,20 @@ export default function OutfitBuilderCanvas() {
   }
 
   function handleCanvasPointerMove(e: React.PointerEvent) {
+    // Rotate path
+    const rotate = rotatingRef.current
+    if (rotate) {
+      const canvasRect = canvasRef.current!.getBoundingClientRect()
+      const angle = Math.atan2(
+        e.clientY - canvasRect.top - rotate.centerY,
+        e.clientX - canvasRect.left - rotate.centerX
+      ) * (180 / Math.PI)
+      const newRotation = rotate.startRotation + (angle - rotate.startAngle)
+      const el = canvasRef.current?.querySelector(`[data-instance="${rotate.instanceId}"]`) as HTMLElement | null
+      if (el) el.style.transform = `rotate(${newRotation}deg)`
+      return
+    }
+
     // Resize path
     const resize = resizingRef.current
     if (resize) {
@@ -214,6 +264,22 @@ export default function OutfitBuilderCanvas() {
   }
 
   function handleCanvasPointerUp(e: React.PointerEvent) {
+    // Rotate commit
+    const rotate = rotatingRef.current
+    if (rotate) {
+      const canvasRect = canvasRef.current!.getBoundingClientRect()
+      const angle = Math.atan2(
+        e.clientY - canvasRect.top - rotate.centerY,
+        e.clientX - canvasRect.left - rotate.centerX
+      ) * (180 / Math.PI)
+      const newRotation = rotate.startRotation + (angle - rotate.startAngle)
+      setCanvasItems(prev => prev.map(i =>
+        i.instanceId === rotate.instanceId ? { ...i, rotation: newRotation } : i
+      ))
+      rotatingRef.current = null
+      return
+    }
+
     // Resize commit
     const resize = resizingRef.current
     if (resize) {
@@ -255,6 +321,24 @@ export default function OutfitBuilderCanvas() {
     draggingRef.current = null
   }
 
+  function handleRotatePointerDown(e: React.PointerEvent, instanceId: string) {
+    e.preventDefault()
+    canvasRef.current?.setPointerCapture(e.pointerId)
+    const item = canvasItems.find(i => i.instanceId === instanceId)
+    if (!item) return
+    const el = canvasRef.current?.querySelector(`[data-instance="${instanceId}"]`) as HTMLElement | null
+    const elH = el?.getBoundingClientRect().height ?? item.width
+    const canvasRect = canvasRef.current!.getBoundingClientRect()
+    const centerX = item.x + item.width / 2
+    const centerY = item.y + elH / 2
+    const startAngle = Math.atan2(
+      e.clientY - canvasRect.top - centerY,
+      e.clientX - canvasRect.left - centerX
+    ) * (180 / Math.PI)
+    rotatingRef.current = { instanceId, centerX, centerY, startAngle, startRotation: item.rotation }
+    setSelectedId(instanceId)
+  }
+
   function handleRemoveItem(instanceId: string) {
     setCanvasItems(prev => prev.filter(i => i.instanceId !== instanceId))
     setSelectedId(prev => prev === instanceId ? null : prev)
@@ -267,10 +351,18 @@ export default function OutfitBuilderCanvas() {
     setSaving(true)
     try {
       const itemIds = [...new Set(canvasItems.map(i => i.clothingId))]
+      const canvasLayout = canvasItems.map(i => ({
+        clothingId: i.clothingId,
+        x: i.x,
+        y: i.y,
+        width: i.width,
+        zIndex: i.zIndex,
+        rotation: i.rotation,
+      }))
       if (isEditMode && editId) {
-        await updateOutfit(editId, { name: outfitName.trim(), items: itemIds, tags, isFavorite }, getToken)
+        await updateOutfit(editId, { name: outfitName.trim(), items: itemIds, tags, isFavorite, canvasLayout }, getToken)
       } else {
-        await createOutfit({ userId: userId!, name: outfitName.trim(), items: itemIds, tags, isFavorite }, getToken)
+        await createOutfit({ userId: userId!, name: outfitName.trim(), items: itemIds, tags, isFavorite, canvasLayout }, getToken)
       }
       navigate('/outfits')
     } catch (err: any) {
@@ -442,6 +534,7 @@ export default function OutfitBuilderCanvas() {
               onRemove={handleRemoveItem}
               onPointerDown={handleItemPointerDown}
               onResizeStart={handleResizePointerDown}
+              onRotateStart={handleRotatePointerDown}
             />
           ))}
 

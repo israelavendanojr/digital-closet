@@ -9,6 +9,7 @@ export interface CanvasItemData {
   y: number
   zIndex: number
   width: number
+  rotation: number
 }
 
 interface CanvasItemProps {
@@ -17,6 +18,7 @@ interface CanvasItemProps {
   onRemove: (instanceId: string) => void
   onPointerDown: (e: React.PointerEvent, instanceId: string) => void
   onResizeStart: (e: React.PointerEvent, instanceId: string, corner: Corner) => void
+  onRotateStart: (e: React.PointerEvent, instanceId: string) => void
 }
 
 const HANDLES: { corner: Corner; style: React.CSSProperties; cursor: string }[] = [
@@ -26,12 +28,12 @@ const HANDLES: { corner: Corner; style: React.CSSProperties; cursor: string }[] 
   { corner: 'se', style: { bottom: -5, right: -5 }, cursor: 'se-resize' },
 ]
 
-export default function CanvasItem({ item, isSelected, onRemove, onPointerDown, onResizeStart }: CanvasItemProps) {
+export default function CanvasItem({ item, isSelected, onRemove, onPointerDown, onResizeStart, onRotateStart }: CanvasItemProps) {
   return (
     <div
       data-instance={item.instanceId}
       className="absolute select-none cursor-grab active:cursor-grabbing"
-      style={{ left: item.x, top: item.y, width: item.width, zIndex: item.zIndex }}
+      style={{ left: item.x, top: item.y, width: item.width, zIndex: item.zIndex, transform: `rotate(${item.rotation}deg)` }}
       onPointerDown={e => onPointerDown(e, item.instanceId)}
     >
       <img
@@ -51,6 +53,27 @@ export default function CanvasItem({ item, isSelected, onRemove, onPointerDown, 
           >
             <rect width="100%" height="100%" fill="none" stroke="#2A3F6B" strokeWidth="1" strokeDasharray="6 10" strokeOpacity="0.45" rx="2" />
           </svg>
+
+          {/* Rotation handle */}
+          <div
+            className="absolute flex items-center justify-center w-6 h-6 rounded-full shadow-md"
+            style={{
+              top: -36,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              cursor: 'grab',
+              zIndex: 3,
+              background: 'white',
+              border: '1px solid rgba(42,63,107,0.35)',
+            }}
+            onPointerDown={e => { e.stopPropagation(); onRotateStart(e, item.instanceId) }}
+            aria-label="Rotate item"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2A3F6B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7 }}>
+              <path d="M21.5 2v6h-6"/>
+              <path d="M21.34 15.57a10 10 0 1 1-.57-8.38"/>
+            </svg>
+          </div>
 
           {/* Remove button */}
           <button
