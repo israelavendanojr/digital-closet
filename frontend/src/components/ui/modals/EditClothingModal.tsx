@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@clerk/clerk-react'
-import ImageDropzone from './ImageDropzone'
-import TagInput from './TagInput'
-import Button from './Button'
+import ImageDropzone from '../inputs/ImageDropzone'
+import TagInput from '../inputs/TagInput'
+import Button from '../Button'
 import {
   getClothingItem,
   updateClothing,
   deleteClothing,
   toBackendCategory,
   type ClothingItem,
-} from '../../services/clothingApi'
-import type { Category } from './CategoryTabs'
+} from '../../../services/clothingApi'
+import type { Category } from '../CategoryTabs'
 
 const SUGGESTIONS = ['green', 'red', 'chic', 'y2k', 'winter', 'casual', 'formal', 'silly', 'vintage']
 

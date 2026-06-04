@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@clerk/clerk-react'
 import { useNavigate } from 'react-router-dom'
-import OutfitCard from '../../components/ui/OutfitCard'
-import TagChip from '../../components/ui/TagChip'
+import OutfitCard from '../../components/ui/cards/OutfitCard'
+import TagChip from '../../components/ui/inputs/TagChip'
 import Button from '../../components/ui/Button'
 import { getAllOutfits, type Outfit } from '../../services/outfitApi'
 

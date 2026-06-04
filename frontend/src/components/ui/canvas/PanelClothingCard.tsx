@@ -1,4 +1,4 @@
-import type { ClothingItem } from '../../services/clothingApi'
+import type { ClothingItem } from '../../../services/clothingApi'
 
 interface PanelClothingCardProps {
   item: ClothingItem

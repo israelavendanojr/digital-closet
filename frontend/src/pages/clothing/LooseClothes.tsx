@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@clerk/clerk-react'
 import CategoryTabs, { type Category } from '../../components/ui/CategoryTabs'
-import ClothingCard from '../../components/ui/ClothingCard'
-import TagChip from '../../components/ui/TagChip'
+import ClothingCard from '../../components/ui/cards/ClothingCard'
+import TagChip from '../../components/ui/inputs/TagChip'
 import Button from '../../components/ui/Button'
-import EditClothingModal from '../../components/ui/EditClothingModal'
-import CreateClothingModal from '../../components/ui/CreateClothingModal'
+import EditClothingModal from '../../components/ui/modals/EditClothingModal'
+import CreateClothingModal from '../../components/ui/modals/CreateClothingModal'
 import { getAllClothes, toBackendCategory, type ClothingItem } from '../../services/clothingApi'
 
 export default function LooseClothes() {

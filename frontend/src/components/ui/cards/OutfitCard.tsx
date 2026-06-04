@@ -1,4 +1,4 @@
-import { Icon } from './icons'
+import { Icon } from '../icons'
 
 interface OutfitCardProps {
   name: string
