@@ -57,3 +57,17 @@ export async function deleteClothing(id: string, getToken: () => Promise<string 
   const res = await fetch(`/api/clothes/${id}`, { method: 'DELETE', headers: await authHeader(getToken) })
   if (!res.ok) throw new Error(`Failed to delete item: ${res.status}`)
 }
+
+export interface ClothingAnalysis {
+  name: string
+  category: 'tops' | 'bottoms' | 'outerwear' | 'footwear' | 'accessories' | 'hatwear'
+  tags: string[]
+}
+
+export async function analyzeClothing(file: File, getToken: () => Promise<string | null>): Promise<ClothingAnalysis> {
+  const formData = new FormData()
+  formData.append('image', file)
+  const res = await fetch('/api/clothes/analyze', { method: 'POST', headers: await authHeader(getToken), body: formData })
+  if (!res.ok) throw new Error(`Analysis failed: ${res.status}`)
+  return res.json()
+}
