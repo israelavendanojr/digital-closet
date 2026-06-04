@@ -45,7 +45,7 @@ export default function CreateClothingModal({ onClose, onCreated }: CreateClothi
     setNewFile(f)
     setRemovingBg(true)
     try {
-      const blob = await removeBackground(f, { model: 'small' })
+      const blob = await removeBackground(f)
       const processed = new File([blob], f.name.replace(/\.[^.]+$/, '.png'), { type: 'image/png' })
       setNewFile(processed)
       setPreview(URL.createObjectURL(blob))

@@ -41,7 +41,7 @@ interface RotateState {
 }
 
 function computeResize(
-  corner: Corner, dx: number, dy: number,
+  corner: Corner, dx: number, _dy: number,
   x0: number, y0: number, w0: number, h0: number, minW = 40
 ): { newW: number; newX: number; newY: number } {
   if (corner === 'se') {

@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactElement } from 'react'
 
 interface IconProps {
   size?: number
@@ -6,10 +6,10 @@ interface IconProps {
   style?: CSSProperties
 }
 
-type IconFn = (props?: IconProps) => JSX.Element
+type IconFn = (props?: IconProps) => ReactElement
 
 function makeIcon(
-  paths: JSX.Element,
+  paths: ReactElement,
   opts: { fill?: boolean; vb?: number; sw?: number } = {},
 ): IconFn {
   const { fill = false, vb = 24, sw = 1.7 } = opts
