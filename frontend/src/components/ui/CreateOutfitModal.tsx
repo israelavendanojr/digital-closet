@@ -4,20 +4,17 @@ import Button from './Button'
 import TagInput from './TagInput'
 import { SlotView, cycle, MAIN_SLOTS, type MainSlot } from './OutfitBuilder'
 import { getAllClothes, type ClothingItem } from '../../services/clothingApi'
-import { getOutfit, updateOutfit, deleteOutfit, type Outfit } from '../../services/outfitApi'
+import { createOutfit, type Outfit } from '../../services/outfitApi'
 
 const SUGGESTIONS = ['casual', 'formal', 'winter', 'summer', 'vintage', 'y2k', 'chic', 'work']
 
-interface EditOutfitModalProps {
-  outfitId: string
+interface CreateOutfitModalProps {
   userId: string
-  initialConfirmDelete?: boolean
   onClose: () => void
-  onSaved: (outfit: Outfit) => void
-  onDeleted: (id: string) => void
+  onCreated: (outfit: Outfit) => void
 }
 
-export default function EditOutfitModal({ outfitId, userId, initialConfirmDelete = false, onClose, onSaved, onDeleted }: EditOutfitModalProps) {
+export default function CreateOutfitModal({ userId, onClose, onCreated }: CreateOutfitModalProps) {
   const { getToken } = useAuth()
 
   const [clothingByCategory, setClothingByCategory] = useState<Record<string, ClothingItem[]>>({})
@@ -33,8 +30,6 @@ export default function EditOutfitModal({ outfitId, userId, initialConfirmDelete
   const [tags, setTags] = useState<string[]>([])
   const [isFavorite, setIsFavorite] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [deleting, setDeleting] = useState(false)
-  const [confirmDelete, setConfirmDelete] = useState(initialConfirmDelete)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [closing, setClosing] = useState(false)
 
@@ -44,41 +39,18 @@ export default function EditOutfitModal({ outfitId, userId, initialConfirmDelete
   }
 
   useEffect(() => {
-    Promise.all([getOutfit(outfitId, getToken), getAllClothes(userId, getToken)])
-      .then(([fetchedOutfit, allItems]) => {
-        setName(fetchedOutfit.name)
-        setTags(fetchedOutfit.tags)
-        setIsFavorite(fetchedOutfit.isFavorite)
-
+    getAllClothes(userId, getToken)
+      .then(allItems => {
         const byCategory: Record<string, ClothingItem[]> = {}
         for (const item of allItems) {
           if (!byCategory[item.category]) byCategory[item.category] = []
           byCategory[item.category].push(item)
         }
         setClothingByCategory(byCategory)
-
-        const newSlotIndex: Record<MainSlot, number> = {
-          hatwear: -1, outerwear: -1, tops: -1, bottoms: -1, footwear: -1,
-        }
-        const accSlots: number[] = []
-
-        for (const outfitItem of fetchedOutfit.items) {
-          const cat = outfitItem.category as string
-          if (cat === 'accessories') {
-            const idx = (byCategory.accessories ?? []).findIndex(i => i._id === outfitItem._id)
-            if (idx !== -1) accSlots.push(idx)
-          } else if (cat in newSlotIndex) {
-            const idx = (byCategory[cat] ?? []).findIndex(i => i._id === outfitItem._id)
-            newSlotIndex[cat as MainSlot] = idx
-          }
-        }
-
-        setSlotIndex(newSlotIndex)
-        setAccessorySlots(accSlots)
       })
       .catch(err => setFetchError(err.message))
       .finally(() => setLoading(false))
-  }, [outfitId])
+  }, [userId])
 
   function moveSlot(cat: MainSlot, dir: 1 | -1) {
     const items = clothingByCategory[cat] ?? []
@@ -120,25 +92,12 @@ export default function EditOutfitModal({ outfitId, userId, initialConfirmDelete
       for (const idx of accessorySlots) {
         if (idx !== -1 && accessories[idx]) selectedIds.push(accessories[idx]._id)
       }
-      const updated = await updateOutfit(outfitId, { name, items: selectedIds, tags, isFavorite }, getToken)
-      onSaved(updated)
+      const outfit = await createOutfit({ userId, name, items: selectedIds, tags, isFavorite }, getToken)
+      onCreated(outfit)
       handleClose()
     } catch (err: any) {
       setSaveError(err.message)
       setSaving(false)
-    }
-  }
-
-  async function handleDelete() {
-    setDeleting(true)
-    try {
-      await deleteOutfit(outfitId, getToken)
-      onDeleted(outfitId)
-      handleClose()
-    } catch (err: any) {
-      setSaveError(err.message)
-      setDeleting(false)
-      setConfirmDelete(false)
     }
   }
 
@@ -152,7 +111,7 @@ export default function EditOutfitModal({ outfitId, userId, initialConfirmDelete
       />
       <div className={`relative bg-card rounded-xl shadow-xl overflow-y-auto max-h-[90vh] w-[min(92vw,900px)] flex flex-col ${closing ? 'animate-modal-out' : 'animate-modal-in'}`}>
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-border">
-          <h2 className="text-xl font-normal">Edit Outfit</h2>
+          <h2 className="text-xl font-normal">Create Outfit</h2>
           <button
             className="bg-transparent border-none text-text-muted hover:text-text cursor-pointer text-lg p-0 leading-none"
             onClick={handleClose}
@@ -218,7 +177,7 @@ export default function EditOutfitModal({ outfitId, userId, initialConfirmDelete
                 </div>
               </div>
 
-              {/* Right: Edit form */}
+              {/* Right: Form */}
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-text-muted">Name:</label>
@@ -250,28 +209,8 @@ export default function EditOutfitModal({ outfitId, userId, initialConfirmDelete
                 <div className="flex gap-3 justify-end mt-2">
                   <Button variant="ghost" onClick={handleClose}>Cancel</Button>
                   <Button disabled={saving || !name.trim()} onClick={handleSave}>
-                    {saving ? 'Saving...' : 'Save Changes'}
+                    {saving ? 'Saving...' : 'Create Outfit'}
                   </Button>
-                </div>
-
-                <div className="border-t border-border pt-4 mt-2">
-                  {!confirmDelete ? (
-                    <Button variant="ghost" size="sm" onClick={() => setConfirmDelete(true)}>
-                      Delete Outfit
-                    </Button>
-                  ) : (
-                    <div className="flex flex-col gap-2">
-                      <p className="text-sm text-text-muted">Are you sure? This cannot be undone.</p>
-                      <div className="flex gap-3">
-                        <Button size="sm" disabled={deleting} onClick={handleDelete}>
-                          {deleting ? 'Deleting...' : 'Confirm Delete'}
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => setConfirmDelete(false)}>
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>

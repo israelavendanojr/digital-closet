@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth, useUser } from '@clerk/clerk-react'
 import ClothingCard from '../components/ui/ClothingCard'
 import OutfitCard from '../components/ui/OutfitCard'
+import EditClothingModal from '../components/ui/EditClothingModal'
+import EditOutfitModal from '../components/ui/EditOutfitModal'
 import { getAllClothes, type ClothingItem } from '../services/clothingApi'
 import { getAllOutfits, type Outfit } from '../services/outfitApi'
 
@@ -25,6 +27,10 @@ export default function Home() {
   const [clothes, setClothes] = useState<ClothingItem[]>([])
   const [outfits, setOutfits] = useState<Outfit[]>([])
   const [loading, setLoading] = useState(true)
+  const [editingItemId, setEditingItemId] = useState<string | null>(null)
+  const [editInitialDelete, setEditInitialDelete] = useState(false)
+  const [editingOutfitId, setEditingOutfitId] = useState<string | null>(null)
+  const [outfitInitialDelete, setOutfitInitialDelete] = useState(false)
 
   useEffect(() => {
     if (!userId) return
@@ -37,6 +43,22 @@ export default function Home() {
       .finally(() => setLoading(false))
   }, [userId])
 
+  function handleOutfitSaved(updated: Outfit) {
+    setOutfits(prev => prev.map(o => o._id === updated._id ? updated : o))
+  }
+
+  function handleOutfitDeleted(id: string) {
+    setOutfits(prev => prev.filter(o => o._id !== id))
+  }
+
+  function handleItemSaved(updated: ClothingItem) {
+    setClothes(prev => prev.map(i => i._id === updated._id ? updated : i))
+  }
+
+  function handleItemDeleted(id: string) {
+    setClothes(prev => prev.filter(i => i._id !== id))
+  }
+
   const recentItems = [...clothes]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 8)
@@ -46,6 +68,7 @@ export default function Home() {
     : null
 
   return (
+    <>
     <div className="flex flex-col px-4 md:px-6 pt-10 pb-24 gap-10 w-full max-w-3xl mx-auto">
 
       {/* Greeting */}
@@ -108,6 +131,8 @@ export default function Home() {
                   label={item.name}
                   imageUrl={item.imageUrl}
                   onClick={() => navigate(`/clothes/${item._id}`)}
+                  onEdit={() => { setEditInitialDelete(false); setEditingItemId(item._id) }}
+                  onDelete={() => { setEditInitialDelete(true); setEditingItemId(item._id) }}
                 />
               </div>
             ))}
@@ -143,11 +168,35 @@ export default function Home() {
               name={outfitOfDay.name}
               items={outfitOfDay.items.map(i => ({ label: i.name, imageUrl: i.imageUrl }))}
               onClick={() => navigate(`/outfits/${outfitOfDay._id}`)}
+              onEdit={() => { setOutfitInitialDelete(false); setEditingOutfitId(outfitOfDay._id) }}
+              onDelete={() => { setOutfitInitialDelete(true); setEditingOutfitId(outfitOfDay._id) }}
             />
           </div>
         )}
       </section>
 
     </div>
+
+    {editingItemId && userId && (
+      <EditClothingModal
+        itemId={editingItemId}
+        initialConfirmDelete={editInitialDelete}
+        onClose={() => setEditingItemId(null)}
+        onSaved={handleItemSaved}
+        onDeleted={handleItemDeleted}
+      />
+    )}
+
+    {editingOutfitId && userId && (
+      <EditOutfitModal
+        outfitId={editingOutfitId}
+        userId={userId}
+        initialConfirmDelete={outfitInitialDelete}
+        onClose={() => setEditingOutfitId(null)}
+        onSaved={handleOutfitSaved}
+        onDeleted={handleOutfitDeleted}
+      />
+    )}
+  </>
   )
 }

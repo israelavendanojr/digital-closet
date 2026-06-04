@@ -11,9 +11,12 @@ interface ClothingCardProps {
 
 export default function ClothingCard({ label, imageUrl, onClick, onEdit, onDelete }: ClothingCardProps) {
   return (
-    <button
+    <div
       className="group bg-bg-soft border border-border-soft rounded-lg p-0 cursor-pointer text-left flex flex-col overflow-hidden transition-[transform,box-shadow,border-color] duration-[180ms] ease-[cubic-bezier(.2,.7,.3,1)] hover:-translate-y-[5px] hover:shadow-lg hover:border-line relative"
+      role="button"
+      tabIndex={0}
       onClick={onClick}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onClick?.() }}
     >
       {/* Quick action buttons — revealed on hover */}
       <div className="absolute top-[14px] right-[14px] flex gap-[6px] z-10 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-[180ms]">
@@ -51,6 +54,6 @@ export default function ClothingCard({ label, imageUrl, onClick, onEdit, onDelet
       <div className="px-[10px] pt-[11px] pb-[8px]">
         <p className="font-sans font-semibold text-[15px] text-ink whitespace-nowrap overflow-hidden text-ellipsis leading-tight">{label}</p>
       </div>
-    </button>
+    </div>
   )
 }

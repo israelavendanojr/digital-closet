@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
 import OutfitCard from '../../components/ui/OutfitCard'
 import TagChip from '../../components/ui/TagChip'
 import Button from '../../components/ui/Button'
 import EditOutfitModal from '../../components/ui/EditOutfitModal'
+import CreateOutfitModal from '../../components/ui/CreateOutfitModal'
 import { getAllOutfits, type Outfit } from '../../services/outfitApi'
 
 export default function SavedOutfits() {
-  const navigate = useNavigate()
   const { userId, getToken } = useAuth()
   const [outfits, setOutfits] = useState<Outfit[]>([])
   const [filterOpen, setFilterOpen] = useState(false)
@@ -16,6 +15,7 @@ export default function SavedOutfits() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [editingOutfitId, setEditingOutfitId] = useState<string | null>(null)
+  const [creatingOutfit, setCreatingOutfit] = useState(false)
 
   useEffect(() => {
     if (!userId) return
@@ -45,6 +45,10 @@ export default function SavedOutfits() {
     setOutfits(prev => prev.filter(o => o._id !== id))
   }
 
+  function handleOutfitCreated(outfit: Outfit) {
+    setOutfits(prev => [...prev, outfit])
+  }
+
   if (loading) return <p className="px-6 py-8 text-text-muted">Loading...</p>
   if (error) return <p className="px-6 py-8 text-red-500">{error}</p>
 
@@ -53,7 +57,7 @@ export default function SavedOutfits() {
     <div className="flex flex-col">
       <div className="flex items-center justify-between px-6 py-5">
         <h1 className="text-[28px] font-normal">Saved Outfits</h1>
-        <Button onClick={() => navigate('/outfits/new')}>+ New Outfit</Button>
+        <Button onClick={() => setCreatingOutfit(true)}>+ New Outfit</Button>
       </div>
       <div className="relative flex items-center justify-end px-6 py-3 border-b border-border">
         <Button variant="ghost" size="sm" onClick={() => setFilterOpen(f => !f)}>
@@ -92,7 +96,7 @@ export default function SavedOutfits() {
         ))}
         <button
           className="bg-transparent border-2 border-dashed border-border rounded cursor-pointer flex flex-col items-center justify-center gap-3 text-text-muted text-sm transition-[background,border-color] duration-150 hover:bg-bg-card hover:border-text-muted"
-          onClick={() => navigate('/outfits/new')}
+          onClick={() => setCreatingOutfit(true)}
         >
           <span className="text-[48px] leading-none">+</span>
           <span className="text-[18px]">Create outfit</span>
@@ -106,6 +110,13 @@ export default function SavedOutfits() {
         onClose={() => setEditingOutfitId(null)}
         onSaved={handleOutfitSaved}
         onDeleted={handleOutfitDeleted}
+      />
+    )}
+    {creatingOutfit && userId && (
+      <CreateOutfitModal
+        userId={userId}
+        onClose={() => setCreatingOutfit(false)}
+        onCreated={handleOutfitCreated}
       />
     )}
     </>

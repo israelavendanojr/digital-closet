@@ -1,17 +1,24 @@
 
 import ClothingItem from '../models/ClothingItem.js';
 import { uploadToS3, deleteFromS3 } from '../lib/s3.js';
+import { getAuth } from '@clerk/express';
 
 const createClothing = async (req: any, res: any) => {
-    if (!req.file) {
-        return res.status(400).json({ message: 'Image file is required.' });
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'Image file is required.' });
+        }
+        const { userId } = getAuth(req);
+        const { name, category, tags } = req.body;
+        const imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype, req.file.originalname);
+        const parsedTags = tags ? JSON.parse(tags) : [];
+        const item = new ClothingItem({ userId, name, category, tags: parsedTags, imageUrl });
+        await item.save();
+        res.status(201).json(item);
+    } catch (err: any) {
+        console.error('createClothing error:', err);
+        res.status(500).json({ message: err.message || 'Internal server error', code: err.Code || err.code });
     }
-    const { userId, name, category, tags } = req.body;
-    const imageUrl = await uploadToS3(req.file.buffer, req.file.mimetype, req.file.originalname);
-    const parsedTags = tags ? JSON.parse(tags) : [];
-    const item = new ClothingItem({ userId, name, category, tags: parsedTags, imageUrl });
-    await item.save();
-    res.status(201).json(item);
 }
 //get clothing item by id
 const getClothingItem = async (req:any, res:any) => {

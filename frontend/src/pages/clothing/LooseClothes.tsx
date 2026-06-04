@@ -5,6 +5,7 @@ import ClothingCard from '../../components/ui/ClothingCard'
 import TagChip from '../../components/ui/TagChip'
 import Button from '../../components/ui/Button'
 import EditClothingModal from '../../components/ui/EditClothingModal'
+import CreateClothingModal from '../../components/ui/CreateClothingModal'
 import { getAllClothes, toBackendCategory, type ClothingItem } from '../../services/clothingApi'
 
 export default function LooseClothes() {
@@ -17,6 +18,7 @@ export default function LooseClothes() {
   const [error, setError] = useState<string | null>(null)
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
   const [editInitialDelete, setEditInitialDelete] = useState(false)
+  const [creatingClothing, setCreatingClothing] = useState(false)
 
   useEffect(() => {
     if (!userId) return
@@ -48,9 +50,17 @@ export default function LooseClothes() {
     setAllItems(prev => prev.filter(i => i._id !== id))
   }
 
+  function handleItemCreated(item: ClothingItem) {
+    setAllItems(prev => [item, ...prev])
+  }
+
   return (
     <>
     <div className="flex flex-col">
+      <div className="flex items-center justify-between px-6 py-5">
+        <h1 className="text-[28px] font-normal">My Clothes</h1>
+        <Button onClick={() => setCreatingClothing(true)}>+ Add Item</Button>
+      </div>
       <CategoryTabs active={category} onChange={setCategory} />
       <div className="relative flex items-center justify-end px-6 py-3 border-b border-border">
         <Button variant="ghost" size="sm" onClick={() => setFilterOpen(f => !f)}>
@@ -93,6 +103,13 @@ export default function LooseClothes() {
             onDelete={() => { setEditInitialDelete(true); setEditingItemId(item._id) }}
           />
         ))}
+        <button
+          className="bg-transparent border-2 border-dashed border-border rounded cursor-pointer flex flex-col items-center justify-center gap-3 text-text-muted text-sm transition-[background,border-color] duration-150 hover:bg-bg-card hover:border-text-muted aspect-square"
+          onClick={() => setCreatingClothing(true)}
+        >
+          <span className="text-[48px] leading-none">+</span>
+          <span className="text-[18px]">Add item</span>
+        </button>
       </div>
     </div>
     {editingItemId && (
@@ -102,6 +119,12 @@ export default function LooseClothes() {
         onClose={() => setEditingItemId(null)}
         onSaved={handleItemSaved}
         onDeleted={handleItemDeleted}
+      />
+    )}
+    {creatingClothing && (
+      <CreateClothingModal
+        onClose={() => setCreatingClothing(false)}
+        onCreated={handleItemCreated}
       />
     )}
     </>
