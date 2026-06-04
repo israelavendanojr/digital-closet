@@ -13,6 +13,7 @@ import Settings from './pages/user/Settings'
 import EditProfile from './pages/user/EditProfile'
 import SignInPage from './pages/auth/SignIn'
 import SignUpPage from './pages/auth/SignUp'
+import OutfitBuilderCanvas from './pages/outfits/OutfitBuilderCanvas'
 
 function App() {
   return (
@@ -21,6 +22,19 @@ function App() {
         <Route path="/sign-in/*" element={<SignInPage />} />
         <Route path="/sign-up/*" element={<SignUpPage />} />
         <Route path="/sso-callback" element={<AuthenticateWithRedirectCallback />} />
+        <Route
+          path="/outfits/builder"
+          element={
+            <>
+              <SignedIn>
+                <OutfitBuilderCanvas />
+              </SignedIn>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
+            </>
+          }
+        />
         <Route
           path="/*"
           element={
