@@ -37,7 +37,7 @@ describe('OutfitCard', () => {
   it('calls onClick when the card is clicked', async () => {
     const handleClick = vi.fn()
     render(<OutfitCard name="Summer Fit" onClick={handleClick} />)
-    await userEvent.click(screen.getByRole('button', { name: 'Summer Fit' }))
+    await userEvent.click(screen.getByRole('button', { name: /Summer Fit/ }))
     expect(handleClick).toHaveBeenCalledOnce()
   })
 
