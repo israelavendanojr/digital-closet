@@ -29,13 +29,13 @@ describe('ClothingCard', () => {
   it('calls onClick when the card is clicked', async () => {
     const handleClick = vi.fn()
     render(<ClothingCard label="Blue Jeans" onClick={handleClick} />)
-    await userEvent.click(screen.getByRole('button'))
+    await userEvent.click(screen.getByRole('button', { name: 'Blue Jeans' }))
     expect(handleClick).toHaveBeenCalledOnce()
   })
 
-  // The card root element is a <button> for keyboard accessibility
+  // The card root element has role="button" for keyboard accessibility
   it('renders as a button element', () => {
     render(<ClothingCard label="Blue Jeans" />)
-    expect(screen.getByRole('button')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Blue Jeans' })).toBeInTheDocument()
   })
 })

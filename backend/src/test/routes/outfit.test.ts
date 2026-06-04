@@ -6,6 +6,7 @@ import mongoose from 'mongoose'
 vi.mock('@clerk/express', () => ({
   requireAuth: () => (_req: any, _res: any, next: any) => next(),
   clerkMiddleware: () => (_req: any, _res: any, next: any) => next(),
+  getAuth: (_req: any) => ({ userId: 'user_test' }),
 }))
 
 const { default: outfitRouter } = await import('../../routes/outfitRoutes.js')

@@ -14,11 +14,11 @@ describe('CategoryTabs', () => {
     }
   })
 
-  // Active tab gets text-text class; inactive tabs get text-text-muted
+  // Active tab gets text-ink class; inactive tabs get text-ink-soft
   it('applies active styles to the active category', () => {
     render(<CategoryTabs active="Tops" onChange={vi.fn()} />)
-    expect(screen.getByRole('button', { name: 'Tops' })).toHaveClass('text-text')
-    expect(screen.getByRole('button', { name: 'All' })).toHaveClass('text-text-muted')
+    expect(screen.getByRole('button', { name: 'Tops' })).toHaveClass('text-ink')
+    expect(screen.getByRole('button', { name: 'All' })).toHaveClass('text-ink-soft')
   })
 
   // Clicking a tab calls onChange with that category's name

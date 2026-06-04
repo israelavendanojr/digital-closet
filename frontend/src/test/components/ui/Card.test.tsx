@@ -42,6 +42,6 @@ describe('Card', () => {
   // Card always has background, rounded corners, and shadow regardless of props
   it('renders base card styles', () => {
     const { container } = render(<Card>content</Card>)
-    expect(container.firstChild).toHaveClass('bg-bg-card', 'rounded', 'shadow-card')
+    expect(container.firstChild).toHaveClass('bg-bg-soft', 'rounded-lg', 'shadow-sm')
   })
 })

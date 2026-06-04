@@ -38,17 +38,17 @@ describe('TagChip', () => {
     expect(handleClick).toHaveBeenCalledOnce()
   })
 
-  // Active chip gets a filled background class (bg-text)
+  // Active chip gets the clay background class
   it('applies active styles when active is true', () => {
     render(<TagChip label="active-tag" active />)
     const chip = screen.getByText('active-tag').closest('span')
-    expect(chip).toHaveClass('bg-text')
+    expect(chip).toHaveClass('bg-clay')
   })
 
-  // Inactive chip stays transparent
+  // Inactive chip gets the soft background class
   it('applies inactive styles when active is false', () => {
     render(<TagChip label="inactive-tag" active={false} />)
     const chip = screen.getByText('inactive-tag').closest('span')
-    expect(chip).toHaveClass('bg-transparent')
+    expect(chip).toHaveClass('bg-bg-soft')
   })
 })

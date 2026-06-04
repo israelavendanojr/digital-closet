@@ -26,28 +26,28 @@ describe('Button', () => {
     expect(handleClick).not.toHaveBeenCalled()
   })
 
-  // Default variant applies the primary background class
+  // Default variant applies the clay background class
   it('applies the primary variant class by default', () => {
     render(<Button>Primary</Button>)
-    expect(screen.getByRole('button')).toHaveClass('bg-bg-card')
+    expect(screen.getByRole('button')).toHaveClass('bg-clay')
   })
 
-  // Ghost variant applies a transparent background class
+  // Ghost variant applies the soft background class
   it('applies the ghost variant class', () => {
     render(<Button variant="ghost">Ghost</Button>)
-    expect(screen.getByRole('button')).toHaveClass('bg-transparent')
+    expect(screen.getByRole('button')).toHaveClass('bg-bg-soft')
   })
 
-  // Small size applies the 13px text class
+  // Small size applies the 14px text class
   it('applies the sm size class', () => {
     render(<Button size="sm">Small</Button>)
-    expect(screen.getByRole('button')).toHaveClass('text-[13px]')
+    expect(screen.getByRole('button')).toHaveClass('text-[14px]')
   })
 
   // Large size applies the wider horizontal padding class
   it('applies the lg size class', () => {
     render(<Button size="lg">Large</Button>)
-    expect(screen.getByRole('button')).toHaveClass('px-8')
+    expect(screen.getByRole('button')).toHaveClass('px-[26px]')
   })
 
   // Custom className is merged alongside built-in classes

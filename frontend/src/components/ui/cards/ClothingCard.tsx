@@ -14,6 +14,7 @@ export default function ClothingCard({ label, imageUrl, onClick, onEdit, onDelet
     <div
       className="group bg-bg-soft border border-border-soft rounded-lg p-0 cursor-pointer text-left flex flex-col overflow-hidden transition-all duration-[180ms] hover:-translate-y-[3px] hover:shadow-md hover:border-line relative"
       role="button"
+      aria-label={label}
       tabIndex={0}
       onClick={onClick}
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onClick?.() }}
