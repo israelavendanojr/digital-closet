@@ -17,7 +17,10 @@ A full-stack MERN application that catalogues your wardrobe. Upload clothing pho
 | Database | MongoDB Atlas, Mongoose |
 | File Storage | Multer, AWS S3 |
 | Background Removal | @imgly/background-removal (in-browser, WebAssembly) |
+| AI Analysis | Google Gemini 2.5 Flash (`@google/generative-ai`) |
+| Analytics | Vercel Analytics |
 | Deployment | Vercel (frontend), Render (backend) |
+| CI/CD | GitHub Actions |
 
 ## Team
 
@@ -44,12 +47,19 @@ VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 
 **Backend** — create `backend/.env`:
 ```
-MONGO_URI=your_mongodb_connection_string
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<dbname>?retryWrites=true&w=majority
+PORT=8080
+
+CLERK_PUBLISHABLE_KEY=your_clerk_public_key
 CLERK_SECRET_KEY=your_clerk_secret_key
+
 AWS_ACCESS_KEY_ID=your_access_key_id
 AWS_SECRET_ACCESS_KEY=your_secret_access_key
 AWS_REGION=your_region
 S3_BUCKET_NAME=your_bucket_name
+
+GEMINI_API=your_gemini_api_key
+
 ```
 
 Install dependencies:
@@ -94,22 +104,26 @@ npm run test:coverage  # generate coverage report
 
 > **Note:** The first `npm test` in the backend downloads a MongoDB binary (~780 MB). Afterwards, runs use the cached binary and are much faster.
 
+## CI/CD
+
+GitHub Actions runs frontend and backend tests automatically on every push and pull request to `main`. The workflow caches both `node_modules` and the MongoDB binary to speed up runs.
+
 ---
 
 ## Pages & Routes
 
-All app routes require authentication via Clerk. Unauthenticated users are redirected to `/sign-in`. `TopNav` is rendered on every protected page.
+All app routes require authentication via Clerk. Unauthenticated users are redirected to `/sign-in`. `TopNav` and `BottomNav` are rendered on every protected page.
 
 | Route | Page | Description |
 |---|---|---|
 | `/sign-in` | SignIn | Clerk sign-in |
 | `/sign-up` | SignUp | Clerk sign-up |
+| `/sso-callback` | — | Clerk SSO redirect handler |
 | `/` | Home | Main dashboard |
 | `/clothes` | LooseClothes | Browse closet items |
-| `/clothes/:id` | ClothingDetail | View and edit a clothing item |
 | `/outfits` | SavedOutfits | Browse saved outfits |
-| `/outfits/new` | SavedOutfitCreation | Build a new outfit |
-| `/outfits/:id` | SavedOutfitDetail | View a saved outfit |
+| `/outfits/builder` | OutfitBuilderCanvas | Build a new outfit on canvas |
+| `/outfits/builder/:id` | OutfitBuilderCanvas | Edit an existing outfit on canvas |
 | `/upload` | Upload | Upload a clothing photo |
 | `/upload/tags` | UploadTags | Tag and categorize the item |
 | `/upload/confirm` | UploadConfirmation | Review before saving |
@@ -123,16 +137,24 @@ All app routes require authentication via Clerk. Unauthenticated users are redir
 
 | Component | Description |
 |---|---|
-| `TopNav` | Shared navigation bar |
+| `TopNav` | Shared top navigation bar |
+| `BottomNav` | Shared bottom navigation bar (mobile) |
 | `Button` | Reusable styled button |
 | `Card` | Base card container |
 | `ClothingCard` | Clothing item with image and tags |
 | `OutfitCard` | Saved outfit card |
-| `OutfitBuilder` | Drag-and-select interface for building outfits |
+| `OutfitBuilder` | Drag-and-select canvas for building outfits |
+| `CanvasItem` | Draggable/resizable clothing item on the outfit canvas |
+| `PanelClothingCard` | Clothing card in the outfit builder side panel |
 | `CategoryTabs` | Filter closet by category |
 | `ImageDropzone` | Drag-and-drop image upload area |
 | `TagChip` | Tag pill/badge display |
 | `TagInput` | Input for adding tags |
+| `CreateClothingModal` | Modal for creating a clothing item |
+| `EditClothingModal` | Modal for editing a clothing item |
+| `CreateOutfitModal` | Modal for creating an outfit |
+| `EditOutfitModal` | Modal for editing an outfit |
+| `EditProfileModal` | Modal for editing profile details |
 
 ---
 
@@ -142,6 +164,7 @@ All routes are protected by Clerk auth middleware (`requireAuth`). Uploaded imag
 
 | Method | Endpoint | Description |
 |---|---|---|
+| POST | `/api/clothes/analyze` | AI-analyze a clothing image (Gemini) — returns name, category, tags |
 | GET | `/api/clothes/user/:userId` | Get all clothing items for a user |
 | POST | `/api/clothes/` | Upload a new clothing item (multipart) |
 | GET | `/api/clothes/:id` | Get a single clothing item |
