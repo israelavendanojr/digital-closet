@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { SignedIn, SignedOut, RedirectToSignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react'
+import { Analytics } from '@vercel/analytics/react'
 import TopNav, { BottomNav } from './components/layout/TopNav'
 
 import Home from './pages/Home'
@@ -74,6 +75,7 @@ function App() {
           }
         />
       </Routes>
+      <Analytics />
     </BrowserRouter>
   )
 }
