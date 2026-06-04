@@ -7,6 +7,7 @@ import Button from '../Button'
 import {
   createClothing,
   toBackendCategory,
+  analyzeClothing,
   type ClothingItem,
 } from '../../../services/clothingApi'
 import type { Category } from '../CategoryTabs'
@@ -15,6 +16,11 @@ const SUGGESTIONS = ['green', 'red', 'chic', 'y2k', 'winter', 'casual', 'formal'
 
 const CATEGORIES = ['Tops', 'Bottoms', 'Outerwear', 'Footwear', 'Headwear', 'Accessories'] as const
 type CategoryLabel = typeof CATEGORIES[number]
+
+const CATEGORY_FROM_BACKEND: Record<string, CategoryLabel> = {
+  tops: 'Tops', bottoms: 'Bottoms', outerwear: 'Outerwear',
+  footwear: 'Footwear', hatwear: 'Headwear', accessories: 'Accessories',
+}
 
 interface CreateClothingModalProps {
   onClose: () => void
@@ -31,6 +37,7 @@ export default function CreateClothingModal({ onClose, onCreated }: CreateClothi
   const [newFile, setNewFile] = useState<File | undefined>()
 
   const [removingBg, setRemovingBg] = useState(false)
+  const [analyzing, setAnalyzing] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [closing, setClosing] = useState(false)
@@ -44,15 +51,28 @@ export default function CreateClothingModal({ onClose, onCreated }: CreateClothi
     setPreview(URL.createObjectURL(f))
     setNewFile(f)
     setRemovingBg(true)
+    let processed = f
     try {
       const blob = await removeBackground(f)
-      const processed = new File([blob], f.name.replace(/\.[^.]+$/, '.png'), { type: 'image/png' })
+      processed = new File([blob], f.name.replace(/\.[^.]+$/, '.png'), { type: 'image/png' })
       setNewFile(processed)
       setPreview(URL.createObjectURL(blob))
     } catch (err) {
       console.error('Background removal failed:', err)
     } finally {
       setRemovingBg(false)
+    }
+    setAnalyzing(true)
+    try {
+      const analysis = await analyzeClothing(processed, getToken)
+      setName(analysis.name)
+      setTags(analysis.tags)
+      const mapped = CATEGORY_FROM_BACKEND[analysis.category]
+      if (mapped) setCategory(mapped)
+    } catch {
+      // silently ignore — user can fill in manually
+    } finally {
+      setAnalyzing(false)
     }
   }
 
@@ -95,7 +115,7 @@ export default function CreateClothingModal({ onClose, onCreated }: CreateClothi
 
         <div className="px-6 py-6">
           <div className="grid grid-cols-2 gap-8 items-start max-sm:grid-cols-1">
-            <ImageDropzone onFile={handleFile} preview={preview} removing={removingBg} />
+            <ImageDropzone onFile={handleFile} preview={preview} removing={removingBg} analyzing={analyzing} />
 
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
@@ -128,7 +148,7 @@ export default function CreateClothingModal({ onClose, onCreated }: CreateClothi
 
               <div className="flex gap-3 justify-end mt-2">
                 <Button variant="ghost" onClick={handleClose}>Cancel</Button>
-                <Button disabled={saving || removingBg || !name.trim()} onClick={handleSave}>
+                <Button disabled={saving || removingBg || analyzing || !name.trim()} onClick={handleSave}>
                   {saving ? 'Saving...' : 'Add Item'}
                 </Button>
               </div>

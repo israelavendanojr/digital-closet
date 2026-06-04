@@ -2,6 +2,7 @@
 import ClothingItem from '../models/ClothingItem.js';
 import { uploadToS3, deleteFromS3 } from '../lib/s3.js';
 import { getAuth } from '@clerk/express';
+import { analyzeClothingImage } from '../lib/gemini.js';
 
 const createClothing = async (req: any, res: any) => {
     try {
@@ -58,4 +59,17 @@ const deleteClothes = async (req: any, res: any) => {
     res.json({ message: 'Item deleted successfully.' });
 }
 
-export {createClothing, getClothingItem, getAllClothes, updateClothes, deleteClothes};
+const analyzeClothing = async (req: any, res: any) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'Image file is required.' });
+        }
+        const analysis = await analyzeClothingImage(req.file.buffer, req.file.mimetype);
+        res.json(analysis);
+    } catch (err: any) {
+        console.error('analyzeClothing error:', err);
+        res.status(500).json({ message: err.message || 'Analysis failed' });
+    }
+}
+
+export {createClothing, getClothingItem, getAllClothes, updateClothes, deleteClothes, analyzeClothing};

@@ -1,10 +1,11 @@
 import express from 'express';
 const clothingRouter = express.Router();
-import { createClothing, getAllClothes,  getClothingItem, updateClothes, deleteClothes } from '../controllers/clothingController.js'
+import { createClothing, getAllClothes,  getClothingItem, updateClothes, deleteClothes, analyzeClothing } from '../controllers/clothingController.js'
 import upload from '../middleware/upload.js';
 import { protect } from '../middleware/auth.js';
 
 clothingRouter.use(protect);
+clothingRouter.post('/analyze', upload.single('image'), analyzeClothing);
 clothingRouter.post('/', upload.single('image'), createClothing);
 clothingRouter.get('/user/:userId', getAllClothes);
 clothingRouter.get('/:id', getClothingItem);
