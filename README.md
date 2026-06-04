@@ -194,5 +194,8 @@ The frontend is deployed on Vercel with a proxy rewrite that forwards `/api/*` t
 
 ## Links
 
+- **Deployed Link:** https://digital-closet-iota.vercel.app/
+
 - **Figma:** https://www.figma.com/design/WjEcSV8ckoe3d5Eq7BsqJa/CSCI-342-Group-Project
+
 - **Primary Notion:** https://www.notion.so/SP26-CSCI-342-Final-Project-Digital-Closet-App-344445435554807ca3f5e325ec764c6f?source=copy_link
