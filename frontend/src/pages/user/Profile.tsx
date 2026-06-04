@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useAuth, useUser } from '@clerk/clerk-react'
-import ClothingCard from '../../components/ui/ClothingCard'
-import OutfitCard from '../../components/ui/OutfitCard'
+import ClothingCard from '../../components/ui/cards/ClothingCard'
+import OutfitCard from '../../components/ui/cards/OutfitCard'
+import EditProfileModal from '../../components/ui/modals/EditProfileModal'
 import { getAllOutfits, type Outfit } from '../../services/outfitApi'
 import { getAllClothes, type ClothingItem } from '../../services/clothingApi'
+import { Icon } from '../../components/ui/icons'
 
 export default function Profile() {
   const { userId, getToken } = useAuth()
   const { user } = useUser()
   const [favoriteOutfits, setFavoriteOutfits] = useState<Outfit[]>([])
   const [clothes, setClothes] = useState<ClothingItem[]>([])
+  const [showEditModal, setShowEditModal] = useState(false)
 
   useEffect(() => {
     if (!userId) return
@@ -40,7 +43,16 @@ export default function Profile() {
           }
         </div>
         <div>
-          <h1 className="text-[22px] font-medium">@{user?.firstName}'s Closet</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-[22px] font-medium">@{user?.firstName}'s Closet</h1>
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="p-1.5 rounded-full bg-bg-card border border-border hover:bg-border transition-colors text-text-muted hover:text-text"
+              aria-label="Edit profile"
+            >
+              {Icon.edit({ size: 14 })}
+            </button>
+          </div>
           <p className="text-sm text-text-muted mt-1">{clothes.length} items</p>
         </div>
       </div>
@@ -71,6 +83,8 @@ export default function Profile() {
           ))}
         </div>
       </section>
+
+      {showEditModal && <EditProfileModal onClose={() => setShowEditModal(false)} />}
     </div>
   )
 }

@@ -1,13 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { SignedIn, SignedOut, RedirectToSignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react'
-import TopNav from './components/layout/TopNav'
+import TopNav, { BottomNav } from './components/layout/TopNav'
 
 import Home from './pages/Home'
 import LooseClothes from './pages/clothing/LooseClothes'
-import ClothingDetail from './pages/clothing/ClothingDetail'
 import SavedOutfits from './pages/outfits/SavedOutfits'
-import SavedOutfitCreation from './pages/outfits/SavedOutfitCreation'
-import SavedOutfitDetail from './pages/outfits/SavedOutfitDetail'
 import Upload from './pages/upload/Upload'
 import UploadTags from './pages/upload/UploadTags'
 import UploadConfirmation from './pages/upload/UploadConfirmation'
@@ -16,6 +13,7 @@ import Settings from './pages/user/Settings'
 import EditProfile from './pages/user/EditProfile'
 import SignInPage from './pages/auth/SignIn'
 import SignUpPage from './pages/auth/SignUp'
+import OutfitBuilderCanvas from './pages/outfits/OutfitBuilderCanvas'
 
 function App() {
   return (
@@ -25,6 +23,32 @@ function App() {
         <Route path="/sign-up/*" element={<SignUpPage />} />
         <Route path="/sso-callback" element={<AuthenticateWithRedirectCallback />} />
         <Route
+          path="/outfits/builder"
+          element={
+            <>
+              <SignedIn>
+                <OutfitBuilderCanvas />
+              </SignedIn>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
+            </>
+          }
+        />
+        <Route
+          path="/outfits/builder/:id"
+          element={
+            <>
+              <SignedIn>
+                <OutfitBuilderCanvas />
+              </SignedIn>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
+            </>
+          }
+        />
+        <Route
           path="/*"
           element={
             <>
@@ -33,10 +57,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/clothes" element={<LooseClothes />} />
-                  <Route path="/clothes/:id" element={<ClothingDetail />} />
                   <Route path="/outfits" element={<SavedOutfits />} />
-                  <Route path="/outfits/new" element={<SavedOutfitCreation />} />
-                  <Route path="/outfits/:id" element={<SavedOutfitDetail />} />
                   <Route path="/upload" element={<Upload />} />
                   <Route path="/upload/tags" element={<UploadTags />} />
                   <Route path="/upload/confirm" element={<UploadConfirmation />} />
@@ -44,6 +65,7 @@ function App() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/settings/edit-profile" element={<EditProfile />} />
                 </Routes>
+                <BottomNav />
               </SignedIn>
               <SignedOut>
                 <RedirectToSignIn />

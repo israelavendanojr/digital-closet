@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import TagInput from '../../components/ui/TagInput'
+import TagInput from '../../components/ui/inputs/TagInput'
 import Button from '../../components/ui/Button'
 import BgRemovalWorker from './bgRemoval.worker?worker'
 

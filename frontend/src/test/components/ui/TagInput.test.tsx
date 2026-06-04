@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import TagInput from '../../../components/ui/TagInput'
+import TagInput from '../../../components/ui/inputs/TagInput'
 
 describe('TagInput', () => {
   // Pre-existing tags passed via props are each visible as chips

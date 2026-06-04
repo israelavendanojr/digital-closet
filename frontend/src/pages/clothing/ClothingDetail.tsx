@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
-import ImageDropzone from '../../components/ui/ImageDropzone'
-import TagInput from '../../components/ui/TagInput'
+import ImageDropzone from '../../components/ui/inputs/ImageDropzone'
+import TagInput from '../../components/ui/inputs/TagInput'
 import Button from '../../components/ui/Button'
 import {
   getClothingItem,

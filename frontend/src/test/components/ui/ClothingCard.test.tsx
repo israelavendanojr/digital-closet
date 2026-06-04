@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import ClothingCard from '../../../components/ui/ClothingCard'
+import ClothingCard from '../../../components/ui/cards/ClothingCard'
 
 describe('ClothingCard', () => {
   // The item name appears as text inside the card

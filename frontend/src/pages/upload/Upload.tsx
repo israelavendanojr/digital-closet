@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import ImageDropzone from '../../components/ui/ImageDropzone'
+import ImageDropzone from '../../components/ui/inputs/ImageDropzone'
 import Button from '../../components/ui/Button'
 
 export default function Upload() {

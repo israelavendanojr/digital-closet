@@ -1,69 +1,202 @@
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { useAuth, useUser } from '@clerk/clerk-react'
+import ClothingCard from '../components/ui/cards/ClothingCard'
+import OutfitCard from '../components/ui/cards/OutfitCard'
+import EditClothingModal from '../components/ui/modals/EditClothingModal'
+import EditOutfitModal from '../components/ui/modals/EditOutfitModal'
+import { getAllClothes, type ClothingItem } from '../services/clothingApi'
+import { getAllOutfits, type Outfit } from '../services/outfitApi'
+
+function getGreeting() {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'Good morning'
+  if (hour < 17) return 'Good afternoon'
+  return 'Good evening'
+}
+
+function formatDate() {
+  return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+}
 
 export default function Home() {
   const navigate = useNavigate()
+  const { userId, getToken } = useAuth()
+  const { user } = useUser()
+
+  const [clothes, setClothes] = useState<ClothingItem[]>([])
+  const [outfits, setOutfits] = useState<Outfit[]>([])
+  const [loading, setLoading] = useState(true)
+  const [editingItemId, setEditingItemId] = useState<string | null>(null)
+  const [editInitialDelete, setEditInitialDelete] = useState(false)
+  const [editingOutfitId, setEditingOutfitId] = useState<string | null>(null)
+  const [outfitInitialDelete, setOutfitInitialDelete] = useState(false)
+
+  useEffect(() => {
+    if (!userId) return
+    Promise.all([
+      getAllClothes(userId, getToken),
+      getAllOutfits(userId, getToken),
+    ])
+      .then(([c, o]) => { setClothes(c); setOutfits(o) })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [userId])
+
+  function handleOutfitSaved(updated: Outfit) {
+    setOutfits(prev => prev.map(o => o._id === updated._id ? updated : o))
+  }
+
+  function handleOutfitDeleted(id: string) {
+    setOutfits(prev => prev.filter(o => o._id !== id))
+  }
+
+  function handleItemSaved(updated: ClothingItem) {
+    setClothes(prev => prev.map(i => i._id === updated._id ? updated : i))
+  }
+
+  function handleItemDeleted(id: string) {
+    setClothes(prev => prev.filter(i => i._id !== id))
+  }
+
+  const recentItems = [...clothes]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 8)
+
+  const outfitOfDay = outfits.length > 0
+    ? outfits[new Date().getDate() % outfits.length]
+    : null
 
   return (
-    <div className="flex flex-col items-center px-4 md:px-6 pt-10 md:pt-[60px] pb-10 gap-9 w-full overflow-x-hidden">
-      <div className="flex flex-col justify-start items-center xl:items-start w-[1250px]">
-        <h1 className="text-[42px] font-light tracking-[-2px]">Organize Your Style</h1>
-        <p className="text-base text-text-muted font-light">Mix and match your favorite pieces, all in one place</p>
-      </div>
-      
-      <div className="flex flex-wrap gap-10 xl:gap-0 justify-center w-full min-h-[300px]">
-        <h1 className="rotate-90 cursor-default text-2xl mr-12 hidden xl:block">✮ ⋆ ˚｡✧ ⋆｡°✩✮ ⋆ ˚｡✧ ⋆</h1>
+    <>
+    <div className="flex flex-col px-4 md:px-6 pt-10 pb-24 gap-10 w-full max-w-3xl mx-auto">
+
+      {/* Greeting */}
+      <section className="flex flex-col gap-1">
+        <h1 className="font-display text-[38px] font-light tracking-[-1.5px] leading-tight">
+          {getGreeting()}{user?.firstName ? `, ${user.firstName}` : ''}
+        </h1>
+        <p className="text-muted text-sm">{formatDate()}</p>
+      </section>
+
+      {/* Stats */}
+      <section className="flex gap-3">
         <button
-          className="bg-bg-card border border-border rounded-4xl px-6 py-8 xl:mr-30 cursor-pointer text-center flex flex-row items-center justify-center gap-20 flex-2 min-w-[350px] max-w-[800px] transition-[box-shadow,transform] duration-150 hover:-translate-y-0.5 hover:shadow-md hover:bg-hover shadow-sm"
+          className="flex flex-col items-start bg-surface border border-border rounded-xl px-5 py-4 flex-1 cursor-pointer transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:shadow-md"
           onClick={() => navigate('/clothes')}
         >
-          <div>
-            <svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z" />
-            </svg>
-          </div>
-          <div className="flex flex-col gap-2.5">
-            <h2 className="text-5xl font-light">Loose Clothes</h2>
-            <p className="text-xl text-text-muted font-light">Browse tops, bottoms &amp; accessories</p>
-          </div>
+          <span className="text-[28px] font-display font-light leading-none">
+            {loading ? '—' : clothes.length}
+          </span>
+          <span className="text-muted text-sm mt-1">items</span>
         </button>
-
-        <div className="flex items-center justify-end">
-          <h1 className="rotate-90 cursor-default text-2xl -mr-21 -ml-75 hidden xl:block">✩₊˚.⋆☾⋆⁺₊✧₊⋆⁺₊✩₊˚.⋆☾⋆⁺₊</h1>
-        </div>
-
         <button
-          className="bg-bg-card border border-border rounded-4xl px-6 py-8 xl:mt-0 cursor-pointer text-center flex flex-col items-center justify-center flex-1 min-w-[180px] max-w-[350px] transition-[box-shadow,transform] duration-150 hover:-translate-y-0.5 hover:shadow-md hover:bg-hover shadow-sm"
+          className="flex flex-col items-start bg-surface border border-border rounded-xl px-5 py-4 flex-1 cursor-pointer transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:shadow-md"
           onClick={() => navigate('/outfits')}
         >
-          <div>
-            <svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="8" height="8" rx="2" />
-              <rect x="14" y="3" width="8" height="8" rx="2" />
-              <rect x="3" y="14" width="8" height="8" rx="2" />
-              <rect x="14" y="14" width="8" height="8" rx="2" />
-            </svg>
-          </div>
-          <h2 className="text-4xl font-light mt-4">Saved Outfits</h2>
-          <p className="text-md text-text-muted font-light mt-2">View &amp; create your outfit combos</p>
+          <span className="text-[28px] font-display font-light leading-none">
+            {loading ? '—' : outfits.length}
+          </span>
+          <span className="text-muted text-sm mt-1">outfits</span>
         </button>
-        <h1 className="-rotate-90 cursor-default text-2xl ml-10 hidden xl:block">✩₊˚.⋆☾⋆⁺₊✧₊⋆⁺₊✩₊˚.⋆☾⋆⁺₊</h1>
-      </div>
+      </section>
 
-      <button
-          className="bg-bg border border-none rounded mt-10 px-6 py-8 cursor-pointer text-center flex flex-col items-center gap-2.5 flex-1 min-w-[180px] max-w-[800px] transition-[box-shadow,transform] duration-150 hover:opacity-[70%]"
-          onClick={() => navigate('/upload')}
-        >
-          <div>
-            <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="16 16 12 12 8 16" />
-              <line x1="12" y1="12" x2="12" y2="21" />
-              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" />
-            </svg>
+      {/* Recently Added */}
+      <section className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-light tracking-[-0.5px]">Recently Added</h2>
+          <Link to="/clothes" className="text-sm text-clay hover:text-clay-deep transition-colors">
+            See all
+          </Link>
+        </div>
+
+        {loading && (
+          <p className="text-muted text-sm">Loading...</p>
+        )}
+
+        {!loading && recentItems.length === 0 && (
+          <p className="text-muted text-sm">
+            No items yet —{' '}
+            <Link to="/upload" className="text-clay hover:text-clay-deep transition-colors">
+              upload your first piece
+            </Link>
+          </p>
+        )}
+
+        {!loading && recentItems.length > 0 && (
+          <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+            {recentItems.map(item => (
+              <div key={item._id} className="w-[130px] flex-shrink-0">
+                <ClothingCard
+                  label={item.name}
+                  imageUrl={item.imageUrl}
+                  onClick={() => navigate(`/clothes/${item._id}`)}
+                  onEdit={() => { setEditInitialDelete(false); setEditingItemId(item._id) }}
+                  onDelete={() => { setEditInitialDelete(true); setEditingItemId(item._id) }}
+                />
+              </div>
+            ))}
           </div>
-          <h2 className="text-4xl font-light">Upload</h2>
-          <p className="text-[16px] text-text-light font-light">Add new items to your wardrobe</p>
-        </button>
+        )}
+      </section>
+
+      {/* Outfit of the Day */}
+      <section className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-light tracking-[-0.5px]">Outfit of the Day</h2>
+          <Link to="/outfits" className="text-sm text-clay hover:text-clay-deep transition-colors">
+            See all
+          </Link>
+        </div>
+
+        {loading && (
+          <p className="text-muted text-sm">Loading...</p>
+        )}
+
+        {!loading && !outfitOfDay && (
+          <p className="text-muted text-sm">
+            No outfits yet —{' '}
+            <Link to="/outfits" className="text-clay hover:text-clay-deep transition-colors">
+              create one
+            </Link>
+          </p>
+        )}
+
+        {!loading && outfitOfDay && (
+          <div className="w-[200px]">
+            <OutfitCard
+              name={outfitOfDay.name}
+              items={outfitOfDay.items.map(i => ({ label: i.name, imageUrl: i.imageUrl }))}
+              onClick={() => navigate(`/outfits/${outfitOfDay._id}`)}
+              onEdit={() => { setOutfitInitialDelete(false); setEditingOutfitId(outfitOfDay._id) }}
+              onDelete={() => { setOutfitInitialDelete(true); setEditingOutfitId(outfitOfDay._id) }}
+            />
+          </div>
+        )}
+      </section>
 
     </div>
+
+    {editingItemId && userId && (
+      <EditClothingModal
+        itemId={editingItemId}
+        initialConfirmDelete={editInitialDelete}
+        onClose={() => setEditingItemId(null)}
+        onSaved={handleItemSaved}
+        onDeleted={handleItemDeleted}
+      />
+    )}
+
+    {editingOutfitId && userId && (
+      <EditOutfitModal
+        outfitId={editingOutfitId}
+        userId={userId}
+        initialConfirmDelete={outfitInitialDelete}
+        onClose={() => setEditingOutfitId(null)}
+        onSaved={handleOutfitSaved}
+        onDeleted={handleOutfitDeleted}
+      />
+    )}
+  </>
   )
 }

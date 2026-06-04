@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import TagChip from '../../../components/ui/TagChip'
+import TagChip from '../../../components/ui/inputs/TagChip'
 
 describe('TagChip', () => {
   // The label string is visible in the DOM

@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
-import OutfitCard from '../../components/ui/OutfitCard'
-import TagChip from '../../components/ui/TagChip'
+import { useNavigate } from 'react-router-dom'
+import OutfitCard from '../../components/ui/cards/OutfitCard'
+import TagChip from '../../components/ui/inputs/TagChip'
 import Button from '../../components/ui/Button'
 import { getAllOutfits, type Outfit } from '../../services/outfitApi'
 
 export default function SavedOutfits() {
-  const navigate = useNavigate()
   const { userId, getToken } = useAuth()
+  const navigate = useNavigate()
   const [outfits, setOutfits] = useState<Outfit[]>([])
   const [filterOpen, setFilterOpen] = useState(false)
   const [selectedTags, setSelectedTags] = useState<string[]>([])
@@ -39,10 +39,11 @@ export default function SavedOutfits() {
   if (error) return <p className="px-6 py-8 text-red-500">{error}</p>
 
   return (
+    <>
     <div className="flex flex-col">
       <div className="flex items-center justify-between px-6 py-5">
         <h1 className="text-[28px] font-normal">Saved Outfits</h1>
-        <Button onClick={() => navigate('/outfits/new')}>+ New Outfit</Button>
+        <Button onClick={() => navigate('/outfits/builder')}>+ New Outfit</Button>
       </div>
       <div className="relative flex items-center justify-end px-6 py-3 border-b border-border">
         <Button variant="ghost" size="sm" onClick={() => setFilterOpen(f => !f)}>
@@ -75,17 +76,19 @@ export default function SavedOutfits() {
             key={outfit._id}
             name={outfit.name}
             items={outfit.items.map(item => ({ label: item.name, imageUrl: item.imageUrl }))}
-            onClick={() => navigate(`/outfits/${outfit._id}`)}
+            onClick={() => navigate(`/outfits/builder/${outfit._id}`)}
+            onEdit={() => navigate(`/outfits/builder/${outfit._id}`)}
           />
         ))}
         <button
-          className="bg-transparent border-2 border-dashed border-border rounded cursor-pointer flex flex-col items-center justify-center gap-3 text-text-muted text-sm transition-[background,border-color] duration-150 hover:bg-bg-card hover:border-text-muted"
-          onClick={() => navigate('/outfits/new')}
+          className="bg-transparent border-2 border-dashed border-border rounded-lg cursor-pointer flex flex-col items-center justify-center gap-3 text-text-muted text-sm transition-all duration-180 hover:bg-bg-card hover:border-line hover:-translate-y-0.75 hover:shadow-md"
+          onClick={() => navigate('/outfits/builder')}
         >
           <span className="text-[48px] leading-none">+</span>
           <span className="text-[18px]">Create outfit</span>
         </button>
       </div>
     </div>
+</>
   )
 }
