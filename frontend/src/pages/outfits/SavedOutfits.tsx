@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import OutfitCard from '../../components/ui/OutfitCard'
 import TagChip from '../../components/ui/TagChip'
 import Button from '../../components/ui/Button'
-import EditOutfitModal from '../../components/ui/EditOutfitModal'
 import { getAllOutfits, type Outfit } from '../../services/outfitApi'
 
 export default function SavedOutfits() {
@@ -15,7 +14,6 @@ export default function SavedOutfits() {
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [editingOutfitId, setEditingOutfitId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!userId) return
@@ -36,14 +34,6 @@ export default function SavedOutfits() {
   const visibleOutfits = selectedTags.length === 0
     ? outfits
     : outfits.filter(o => selectedTags.some(t => o.tags.includes(t)))
-
-  function handleOutfitSaved(updated: Outfit) {
-    setOutfits(prev => prev.map(o => o._id === updated._id ? updated : o))
-  }
-
-  function handleOutfitDeleted(id: string) {
-    setOutfits(prev => prev.filter(o => o._id !== id))
-  }
 
   if (loading) return <p className="px-6 py-8 text-text-muted">Loading...</p>
   if (error) return <p className="px-6 py-8 text-red-500">{error}</p>
@@ -86,8 +76,8 @@ export default function SavedOutfits() {
             key={outfit._id}
             name={outfit.name}
             items={outfit.items.map(item => ({ label: item.name, imageUrl: item.imageUrl }))}
-            onClick={() => setEditingOutfitId(outfit._id)}
-            onEdit={() => setEditingOutfitId(outfit._id)}
+            onClick={() => navigate(`/outfits/builder/${outfit._id}`)}
+            onEdit={() => navigate(`/outfits/builder/${outfit._id}`)}
           />
         ))}
         <button
@@ -99,15 +89,6 @@ export default function SavedOutfits() {
         </button>
       </div>
     </div>
-    {editingOutfitId && userId && (
-      <EditOutfitModal
-        outfitId={editingOutfitId}
-        userId={userId}
-        onClose={() => setEditingOutfitId(null)}
-        onSaved={handleOutfitSaved}
-        onDeleted={handleOutfitDeleted}
-      />
-    )}
 </>
   )
 }

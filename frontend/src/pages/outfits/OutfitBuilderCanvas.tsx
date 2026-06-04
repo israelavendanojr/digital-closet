@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
 import Button from '../../components/ui/Button'
 import PanelClothingCard from '../../components/ui/PanelClothingCard'
 import CanvasItem, { type CanvasItemData, type Corner } from '../../components/ui/CanvasItem'
+import TagInput from '../../components/ui/TagInput'
 import { getAllClothes, toBackendCategory, type ClothingItem } from '../../services/clothingApi'
-import { createOutfit } from '../../services/outfitApi'
+import { createOutfit, getOutfit, updateOutfit, deleteOutfit } from '../../services/outfitApi'
 import type { Category } from '../../components/ui/CategoryTabs'
+
+const SUGGESTIONS = ['casual', 'formal', 'winter', 'summer', 'vintage', 'y2k', 'chic', 'work']
 
 const CATEGORIES: Category[] = ['All', 'Tops', 'Bottoms', 'Outerwear', 'Footwear', 'Headwear', 'Accessories']
 
@@ -54,6 +57,8 @@ function computeResize(
 
 export default function OutfitBuilderCanvas() {
   const navigate = useNavigate()
+  const { id: editId } = useParams<{ id?: string }>()
+  const isEditMode = Boolean(editId)
   const { userId, getToken } = useAuth()
 
   const [allClothes, setAllClothes] = useState<ClothingItem[]>([])
@@ -65,8 +70,12 @@ export default function OutfitBuilderCanvas() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const [outfitName, setOutfitName] = useState('')
+  const [tags, setTags] = useState<string[]>([])
+  const [isFavorite, setIsFavorite] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const canvasRef = useRef<HTMLDivElement>(null)
   const draggingRef = useRef<DragState | null>(null)
@@ -78,6 +87,32 @@ export default function OutfitBuilderCanvas() {
       .then(setAllClothes)
       .finally(() => setLoadingClothes(false))
   }, [userId])
+
+  // In edit mode, load existing outfit and pre-populate canvas
+  useEffect(() => {
+    if (!editId || !userId) return
+    getOutfit(editId, getToken).then(outfit => {
+      setOutfitName(outfit.name)
+      setTags(outfit.tags)
+      setIsFavorite(outfit.isFavorite)
+      let z = 1
+      const items: CanvasItemData[] = outfit.items.map((item, i) => {
+        z = i + 2
+        return {
+          instanceId: `${item._id}-${i}`,
+          clothingId: item._id,
+          imageUrl: item.imageUrl,
+          name: item.name,
+          x: 40 + (i % 4) * 160,
+          y: 40 + Math.floor(i / 4) * 180,
+          zIndex: i + 1,
+          width: 140,
+        }
+      })
+      setMaxZ(z)
+      setCanvasItems(items)
+    })
+  }, [editId, userId])
 
   const filteredClothes = activeCategory === 'All'
     ? allClothes
@@ -232,11 +267,28 @@ export default function OutfitBuilderCanvas() {
     setSaving(true)
     try {
       const itemIds = [...new Set(canvasItems.map(i => i.clothingId))]
-      await createOutfit({ userId: userId!, name: outfitName.trim(), items: itemIds }, getToken)
+      if (isEditMode && editId) {
+        await updateOutfit(editId, { name: outfitName.trim(), items: itemIds, tags, isFavorite }, getToken)
+      } else {
+        await createOutfit({ userId: userId!, name: outfitName.trim(), items: itemIds, tags, isFavorite }, getToken)
+      }
       navigate('/outfits')
     } catch (err: any) {
       setSaveError(err.message)
       setSaving(false)
+    }
+  }
+
+  async function handleDelete() {
+    if (!editId) return
+    setDeleting(true)
+    try {
+      await deleteOutfit(editId, getToken)
+      navigate('/outfits')
+    } catch (err: any) {
+      setSaveError(err.message)
+      setDeleting(false)
+      setConfirmDelete(false)
     }
   }
 
@@ -245,12 +297,12 @@ export default function OutfitBuilderCanvas() {
 
       {/* Top bar */}
       <div
-        className="flex items-center gap-4 px-5 py-3 shrink-0"
+        className="flex items-center gap-3 px-5 py-3 shrink-0"
         style={{ borderBottom: '1px solid var(--color-border)', background: 'var(--color-header)' }}
       >
         <button
           onClick={() => navigate('/outfits')}
-          className="flex items-center gap-1.5 font-sans font-semibold text-[14px] cursor-pointer border-none rounded-pill px-3 py-2 transition-colors duration-150"
+          className="flex items-center gap-1.5 font-sans font-semibold text-[14px] cursor-pointer border-none rounded-pill px-3 py-2 transition-colors duration-150 shrink-0"
           style={{ color: 'var(--color-ink-soft)', background: 'transparent' }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(63,58,49,.07)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-ink)' }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = 'var(--color-ink-soft)' }}
@@ -266,16 +318,47 @@ export default function OutfitBuilderCanvas() {
           value={outfitName}
           onChange={e => { setOutfitName(e.target.value); setSaveError(null) }}
           placeholder="Name your outfit..."
-          className="borderless-input flex-1 text-[20px] font-semibold"
-          style={{ maxWidth: 420 }}
+          className="borderless-input text-[20px] font-semibold shrink-0"
+          style={{ width: 260 }}
         />
 
-        <div className="flex items-center gap-3 ml-auto">
+        {/* Tags inline */}
+        <div className="flex-1 min-w-0">
+          <TagInput tags={tags} onChange={setTags} suggestions={SUGGESTIONS} placeholder="Add tags..." />
+        </div>
+
+        {/* Favorite toggle */}
+        <button
+          onClick={() => setIsFavorite(f => !f)}
+          className="border-none bg-transparent cursor-pointer p-1 leading-none flex items-center gap-1.5 shrink-0"
+          aria-label="Toggle favorite"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill={isFavorite ? 'var(--color-clay)' : 'none'} stroke={isFavorite ? 'var(--color-clay)' : 'var(--color-ink-soft)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span className="font-sans text-[13px]" style={{ color: isFavorite ? 'var(--color-clay)' : 'var(--color-ink-soft)' }}>Favorite</span>
+        </button>
+
+        <div className="flex items-center gap-3 shrink-0">
           {saveError && (
             <span className="text-[13px] font-sans" style={{ color: 'var(--color-clay)' }}>{saveError}</span>
           )}
+          {isEditMode && !confirmDelete && (
+            <Button variant="ghost" size="sm" onClick={() => setConfirmDelete(true)}>
+              Delete
+            </Button>
+          )}
+          {isEditMode && confirmDelete && (
+            <div className="flex items-center gap-2">
+              <span className="text-[13px] font-sans" style={{ color: 'var(--color-ink-soft)' }}>Delete outfit?</span>
+              <Button size="sm" disabled={deleting} onClick={handleDelete}>
+                {deleting ? 'Deleting...' : 'Confirm'}
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => setConfirmDelete(false)}>Cancel</Button>
+            </div>
+          )}
           <Button onClick={handleSave} disabled={saving} size="md">
-            {saving ? 'Saving...' : 'Save Outfit'}
+            {saving ? 'Saving...' : isEditMode ? 'Save Changes' : 'Save Outfit'}
           </Button>
         </div>
       </div>

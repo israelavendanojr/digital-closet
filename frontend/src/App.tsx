@@ -36,6 +36,19 @@ function App() {
           }
         />
         <Route
+          path="/outfits/builder/:id"
+          element={
+            <>
+              <SignedIn>
+                <OutfitBuilderCanvas />
+              </SignedIn>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
+            </>
+          }
+        />
+        <Route
           path="/*"
           element={
             <>
