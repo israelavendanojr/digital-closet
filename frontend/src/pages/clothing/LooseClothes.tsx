@@ -104,7 +104,7 @@ export default function LooseClothes() {
           />
         ))}
         <button
-          className="bg-transparent border-2 border-dashed border-border rounded cursor-pointer flex flex-col items-center justify-center gap-3 text-text-muted text-sm transition-[background,border-color] duration-150 hover:bg-bg-card hover:border-text-muted aspect-square"
+          className="bg-transparent border-2 border-dashed border-border rounded-lg cursor-pointer flex flex-col items-center justify-center gap-3 text-text-muted text-sm transition-all duration-180 hover:bg-bg-card hover:border-line hover:-translate-y-0.75 hover:shadow-md"
           onClick={() => setCreatingClothing(true)}
         >
           <span className="text-[48px] leading-none">+</span>

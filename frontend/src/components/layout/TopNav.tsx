@@ -1,5 +1,6 @@
 import { useRef, useState, useLayoutEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useUser } from '@clerk/clerk-react'
 import { Icon } from '../ui/icons'
 import { cn } from '../../lib/cn'
 
@@ -52,6 +53,7 @@ function isActive(path: string, location: string): boolean {
 export default function TopNav() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const { user } = useUser()
 
   const btnRefs = useRef<(HTMLButtonElement | null)[]>([])
   const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 })
@@ -71,7 +73,7 @@ export default function TopNav() {
     >
       {/* Logo */}
       <button
-        className="bg-transparent border-none p-0 cursor-pointer hover:opacity-75 transition-opacity duration-150"
+        className="bg-transparent border-none p-0 cursor-pointer transition-all duration-[180ms] hover:-translate-y-[2px] hover:opacity-80"
         onClick={() => navigate('/')}
         aria-label="Home"
       >
@@ -99,8 +101,8 @@ export default function TopNav() {
               ref={el => { btnRefs.current[i] = el }}
               onClick={() => navigate(link.path)}
               className={cn(
-                'relative z-10 flex items-center gap-2 font-sans font-semibold text-[15px] px-4 py-[9px] rounded-pill border-none cursor-pointer transition-colors duration-150',
-                active ? 'text-white' : 'text-ink-soft hover:text-ink',
+                'relative z-10 flex items-center gap-2 font-sans font-semibold text-[15px] px-4 py-[9px] rounded-pill border-none cursor-pointer transition-all duration-180',
+                active ? 'text-white' : 'text-ink-soft hover:text-ink hover:-translate-y-0.5',
               )}
             >
               {link.icon({ size: 18, color: active ? '#fff' : 'currentColor' })}
@@ -114,18 +116,21 @@ export default function TopNav() {
       <div className="flex items-center gap-2">
         
         <button
-          className="w-[42px] h-[42px] rounded-full border border-border bg-bg-soft text-ink-soft flex items-center justify-center cursor-pointer transition-all duration-150 hover:shadow-sm hover:border-line"
+          className="w-[42px] h-[42px] rounded-full border border-border bg-bg-soft text-ink-soft flex items-center justify-center cursor-pointer transition-all duration-180 hover:-translate-y-0.75 hover:shadow-md hover:border-line"
           onClick={() => navigate('/settings')}
           aria-label="Settings"
         >
           {Icon.gear({ size: 19 })}
         </button>
         <button
-          className="w-[42px] h-[42px] rounded-full border border-border bg-bg-soft text-ink-soft flex items-center justify-center cursor-pointer transition-all duration-150 hover:shadow-sm hover:border-line"
+          className="w-[42px] h-[42px] rounded-full border border-border bg-bg-soft text-ink-soft flex items-center justify-center cursor-pointer transition-all duration-180 hover:-translate-y-0.75 hover:shadow-md hover:border-line"
           onClick={() => navigate('/profile')}
           aria-label="Profile"
         >
-          {Icon.user({ size: 19 })}
+          {user?.imageUrl
+            ? <img src={user.imageUrl} alt="Profile" className="w-full h-full object-cover rounded-full" />
+            : Icon.user({ size: 19 })
+          }
         </button>
       </div>
     </nav>
@@ -143,6 +148,7 @@ const BOTTOM_LINKS = [
 export function BottomNav() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const { user } = useUser()
 
   return (
     <nav
@@ -178,7 +184,10 @@ export function BottomNav() {
             className="flex flex-col items-center gap-[3px] bg-transparent border-none cursor-pointer"
             style={{ color: active ? 'var(--color-ink)' : 'var(--color-muted)' }}
           >
-            {link.icon({ size: 22, color: active ? 'var(--color-clay)' : 'var(--color-muted)' })}
+            {link.id === 'you' && user?.imageUrl
+              ? <img src={user.imageUrl} alt="Profile" className="rounded-full object-cover" style={{ width: 22, height: 22, border: active ? '2px solid var(--color-clay)' : '2px solid transparent' }} />
+              : link.icon({ size: 22, color: active ? 'var(--color-clay)' : 'var(--color-muted)' })
+            }
             <span className="font-sans font-semibold" style={{ fontSize: 10.5 }}>{link.label}</span>
           </button>
         )

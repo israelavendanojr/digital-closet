@@ -12,7 +12,7 @@ interface ClothingCardProps {
 export default function ClothingCard({ label, imageUrl, onClick, onEdit, onDelete }: ClothingCardProps) {
   return (
     <div
-      className="group bg-bg-soft border border-border-soft rounded-lg p-0 cursor-pointer text-left flex flex-col overflow-hidden transition-[transform,box-shadow,border-color] duration-[180ms] ease-[cubic-bezier(.2,.7,.3,1)] hover:-translate-y-[5px] hover:shadow-lg hover:border-line relative"
+      className="group bg-bg-soft border border-border-soft rounded-lg p-0 cursor-pointer text-left flex flex-col overflow-hidden transition-all duration-[180ms] hover:-translate-y-[3px] hover:shadow-md hover:border-line relative"
       role="button"
       tabIndex={0}
       onClick={onClick}
