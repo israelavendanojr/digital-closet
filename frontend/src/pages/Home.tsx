@@ -4,7 +4,6 @@ import { useAuth, useUser } from '@clerk/clerk-react'
 import ClothingCard from '../components/ui/cards/ClothingCard'
 import OutfitCard from '../components/ui/cards/OutfitCard'
 import EditClothingModal from '../components/ui/modals/EditClothingModal'
-import EditOutfitModal from '../components/ui/modals/EditOutfitModal'
 import { getAllClothes, type ClothingItem } from '../services/clothingApi'
 import { getAllOutfits, type Outfit } from '../services/outfitApi'
 
@@ -29,8 +28,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
   const [editInitialDelete, setEditInitialDelete] = useState(false)
-  const [editingOutfitId, setEditingOutfitId] = useState<string | null>(null)
-  const [outfitInitialDelete, setOutfitInitialDelete] = useState(false)
 
   useEffect(() => {
     if (!userId) return
@@ -42,14 +39,6 @@ export default function Home() {
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [userId])
-
-  function handleOutfitSaved(updated: Outfit) {
-    setOutfits(prev => prev.map(o => o._id === updated._id ? updated : o))
-  }
-
-  function handleOutfitDeleted(id: string) {
-    setOutfits(prev => prev.filter(o => o._id !== id))
-  }
 
   function handleItemSaved(updated: ClothingItem) {
     setClothes(prev => prev.map(i => i._id === updated._id ? updated : i))
@@ -168,8 +157,8 @@ export default function Home() {
               name={outfitOfDay.name}
               items={outfitOfDay.items.map(i => ({ label: i.name, imageUrl: i.imageUrl }))}
               onClick={() => navigate(`/outfits/${outfitOfDay._id}`)}
-              onEdit={() => { setOutfitInitialDelete(false); setEditingOutfitId(outfitOfDay._id) }}
-              onDelete={() => { setOutfitInitialDelete(true); setEditingOutfitId(outfitOfDay._id) }}
+              onEdit={() => navigate(`/outfits/builder/${outfitOfDay._id}`)}
+              onDelete={() => navigate(`/outfits/builder/${outfitOfDay._id}`)}
             />
           </div>
         )}
@@ -187,16 +176,6 @@ export default function Home() {
       />
     )}
 
-    {editingOutfitId && userId && (
-      <EditOutfitModal
-        outfitId={editingOutfitId}
-        userId={userId}
-        initialConfirmDelete={outfitInitialDelete}
-        onClose={() => setEditingOutfitId(null)}
-        onSaved={handleOutfitSaved}
-        onDeleted={handleOutfitDeleted}
-      />
-    )}
   </>
   )
 }
