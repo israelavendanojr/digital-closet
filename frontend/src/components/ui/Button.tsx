@@ -7,15 +7,15 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses = {
-  primary:   'bg-bg-card text-text border border-border hover:enabled:bg-hover shadow-sm',
-  secondary: 'bg-bg-card text-bg border-none hover:enabled:opacity-85 shadow-sm',
-  ghost:     'bg-transparent text-text-muted border border-border hover:enabled:bg-hover hover:enabled:text-text shadow-sm',
+  primary:   'bg-clay text-white border border-clay hover:enabled:bg-clay-deep hover:enabled:border-clay-deep hover:enabled:shadow-[0_6px_16px_rgba(190,111,74,.28)]',
+  secondary: 'bg-ink text-white border border-ink hover:enabled:opacity-85',
+  ghost:     'bg-bg-soft text-ink border border-border hover:enabled:shadow-sm hover:enabled:border-line',
 }
 
 const sizeClasses = {
-  sm: 'text-[13px] px-[14px] py-[6px]',
-  md: 'text-[15px] px-[22px] py-[10px]',
-  lg: 'text-base px-8 py-[14px]',
+  sm: 'text-[14px] px-[15px] py-[9px]',
+  md: 'text-[15px] px-[20px] py-[12px]',
+  lg: 'text-base px-[26px] py-[14px]',
 }
 
 export default function Button({
@@ -28,7 +28,7 @@ export default function Button({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-pill font-light cursor-pointer transition-[opacity,background] duration-150 whitespace-nowrap disabled:opacity-45 disabled:cursor-not-allowed',
+        'inline-flex items-center justify-center gap-2 rounded-pill font-sans font-semibold cursor-pointer transition-all duration-150 whitespace-nowrap disabled:opacity-45 disabled:cursor-not-allowed',
         variantClasses[variant],
         sizeClasses[size],
         className,

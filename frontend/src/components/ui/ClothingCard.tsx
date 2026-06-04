@@ -1,3 +1,5 @@
+import { Icon } from './icons'
+
 interface ClothingCardProps {
   label: string
   imageUrl?: string
@@ -8,16 +10,45 @@ interface ClothingCardProps {
 export default function ClothingCard({ label, imageUrl, onClick }: ClothingCardProps) {
   return (
     <button
-      className="bg-bg-card border border-border rounded p-0 cursor-pointer text-left flex flex-col overflow-hidden transition-shadow duration-150 hover:shadow-md shadow-sm"
+      className="group bg-bg-soft border border-border-soft rounded-lg p-0 cursor-pointer text-left flex flex-col overflow-hidden transition-[transform,box-shadow,border-color] duration-[180ms] ease-[cubic-bezier(.2,.7,.3,1)] hover:-translate-y-[5px] hover:shadow-lg hover:border-line relative"
       onClick={onClick}
     >
-      <div className="w-full aspect-square bg-border flex items-center justify-center overflow-hidden">
+      {/* Quick action buttons — revealed on hover */}
+      <div className="absolute top-[14px] right-[14px] flex gap-[6px] z-10 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-[180ms]">
+        <button
+          className="w-[34px] h-[34px] rounded-full border-none cursor-pointer flex items-center justify-center shadow-md transition-all duration-150"
+          style={{ background: 'rgba(251,248,241,.94)', color: 'var(--color-ink)' }}
+          onClick={(e) => { e.stopPropagation() }}
+          aria-label="Edit"
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-clay)'; (e.currentTarget as HTMLButtonElement).style.color = '#fff' }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(251,248,241,.94)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-ink)' }}
+        >
+          {Icon.edit({ size: 15 })}
+        </button>
+        <button
+          className="w-[34px] h-[34px] rounded-full border-none cursor-pointer flex items-center justify-center shadow-md transition-all duration-150"
+          style={{ background: 'rgba(251,248,241,.94)', color: 'var(--color-ink)' }}
+          onClick={(e) => { e.stopPropagation() }}
+          aria-label="Add to outfit"
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-clay)'; (e.currentTarget as HTMLButtonElement).style.color = '#fff' }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(251,248,241,.94)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-ink)' }}
+        >
+          {Icon.layers({ size: 15 })}
+        </button>
+      </div>
+
+      {/* Image area */}
+      <div className="w-full aspect-square bg-surface-2 flex items-center justify-center overflow-hidden">
         {imageUrl
           ? <img src={imageUrl} alt={label} className="w-full h-full object-cover" />
-          : <span className="text-[28px] text-text-light">+</span>
+          : <span className="text-[28px] text-muted">+</span>
         }
       </div>
-      <p className="text-[13px] text-text px-2.5 py-2 whitespace-nowrap overflow-hidden text-ellipsis">{label}</p>
+
+      {/* Label */}
+      <div className="px-[10px] pt-[11px] pb-[8px]">
+        <p className="font-sans font-semibold text-[15px] text-ink whitespace-nowrap overflow-hidden text-ellipsis leading-tight">{label}</p>
+      </div>
     </button>
   )
 }

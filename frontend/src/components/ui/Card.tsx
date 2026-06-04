@@ -19,7 +19,7 @@ export default function Card({
   ...props
 }: CardProps) {
   return (
-    <div className={cn('bg-bg-card rounded shadow-card', padClasses[padding], className)} {...props}>
+    <div className={cn('bg-bg-soft border border-border-soft rounded-lg shadow-sm', padClasses[padding], className)} {...props}>
       {children}
     </div>
   )

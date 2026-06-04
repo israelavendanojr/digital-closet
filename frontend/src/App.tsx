@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { SignedIn, SignedOut, RedirectToSignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react'
-import TopNav from './components/layout/TopNav'
+import TopNav, { BottomNav } from './components/layout/TopNav'
 
 import Home from './pages/Home'
 import LooseClothes from './pages/clothing/LooseClothes'
@@ -44,6 +44,7 @@ function App() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/settings/edit-profile" element={<EditProfile />} />
                 </Routes>
+                <BottomNav />
               </SignedIn>
               <SignedOut>
                 <RedirectToSignIn />

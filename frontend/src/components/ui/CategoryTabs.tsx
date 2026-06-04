@@ -11,15 +11,15 @@ const CATEGORIES: Category[] = ['All', 'Tops', 'Bottoms', 'Outerwear', 'Footwear
 
 export default function CategoryTabs({ active, onChange }: CategoryTabsProps) {
   return (
-    <div className="flex justify-between border-b border-border px-10">
+    <div className="flex items-center gap-1.5 flex-wrap">
       {CATEGORIES.map(cat => (
         <button
           key={cat}
           className={cn(
-            'bg-transparent border-none text-[15px] px-5 py-3 cursor-pointer relative transition-colors duration-150',
+            'font-sans font-semibold text-[15px] px-[17px] py-[9px] rounded-pill border cursor-pointer transition-all duration-150 whitespace-nowrap',
             active === cat
-              ? 'text-text font-medium tab-active-bar'
-              : 'text-text-muted hover:text-text',
+              ? 'text-ink bg-bg-soft border-border shadow-sm font-bold'
+              : 'text-ink-soft border-transparent hover:text-ink hover:bg-[rgba(63,58,49,.04)]',
           )}
           onClick={() => onChange(cat)}
         >
