@@ -112,12 +112,7 @@ export default function TopNav() {
 
       {/* Icon buttons */}
       <div className="flex items-center gap-2">
-        <button
-          className="w-[42px] h-[42px] rounded-full border border-border bg-bg-soft text-ink-soft flex items-center justify-center cursor-pointer transition-all duration-150 hover:shadow-sm hover:border-line"
-          aria-label="Search"
-        >
-          {Icon.search({ size: 19 })}
-        </button>
+        
         <button
           className="w-[42px] h-[42px] rounded-full border border-border bg-bg-soft text-ink-soft flex items-center justify-center cursor-pointer transition-all duration-150 hover:shadow-sm hover:border-line"
           onClick={() => navigate('/settings')}

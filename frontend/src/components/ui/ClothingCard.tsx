@@ -5,9 +5,11 @@ interface ClothingCardProps {
   imageUrl?: string
   tags?: string[]
   onClick?: () => void
+  onEdit?: () => void
+  onDelete?: () => void
 }
 
-export default function ClothingCard({ label, imageUrl, onClick }: ClothingCardProps) {
+export default function ClothingCard({ label, imageUrl, onClick, onEdit, onDelete }: ClothingCardProps) {
   return (
     <button
       className="group bg-bg-soft border border-border-soft rounded-lg p-0 cursor-pointer text-left flex flex-col overflow-hidden transition-[transform,box-shadow,border-color] duration-[180ms] ease-[cubic-bezier(.2,.7,.3,1)] hover:-translate-y-[5px] hover:shadow-lg hover:border-line relative"
@@ -18,7 +20,7 @@ export default function ClothingCard({ label, imageUrl, onClick }: ClothingCardP
         <button
           className="w-[34px] h-[34px] rounded-full border-none cursor-pointer flex items-center justify-center shadow-md transition-all duration-150"
           style={{ background: 'rgba(251,248,241,.94)', color: 'var(--color-ink)' }}
-          onClick={(e) => { e.stopPropagation() }}
+          onClick={(e) => { e.stopPropagation(); onEdit?.() }}
           aria-label="Edit"
           onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-clay)'; (e.currentTarget as HTMLButtonElement).style.color = '#fff' }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(251,248,241,.94)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-ink)' }}
@@ -28,12 +30,12 @@ export default function ClothingCard({ label, imageUrl, onClick }: ClothingCardP
         <button
           className="w-[34px] h-[34px] rounded-full border-none cursor-pointer flex items-center justify-center shadow-md transition-all duration-150"
           style={{ background: 'rgba(251,248,241,.94)', color: 'var(--color-ink)' }}
-          onClick={(e) => { e.stopPropagation() }}
-          aria-label="Add to outfit"
+          onClick={(e) => { e.stopPropagation(); onDelete?.() }}
+          aria-label="Delete"
           onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-clay)'; (e.currentTarget as HTMLButtonElement).style.color = '#fff' }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(251,248,241,.94)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-ink)' }}
         >
-          {Icon.layers({ size: 15 })}
+          {Icon.trash({ size: 15 })}
         </button>
       </div>
 
