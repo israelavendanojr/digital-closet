@@ -1,3 +1,4 @@
+import { useRef, useState, useLayoutEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Icon } from '../ui/icons'
 import { cn } from '../../lib/cn'
@@ -52,6 +53,15 @@ export default function TopNav() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
 
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 })
+  const activeIndex = NAV_LINKS.findIndex(l => isActive(l.path, pathname))
+
+  useLayoutEffect(() => {
+    const el = btnRefs.current[activeIndex]
+    if (el) setPillStyle({ left: el.offsetLeft, width: el.offsetWidth })
+  }, [activeIndex])
+
   return (
     <nav
       className="flex items-center justify-between px-6 md:px-10 py-[18px] border-b border-border sticky top-0 z-50"
@@ -69,18 +79,28 @@ export default function TopNav() {
       </button>
 
       {/* Desktop nav pills */}
-      <div className="hidden md:flex items-center gap-1">
-        {NAV_LINKS.map((link) => {
+      <div className="hidden md:flex items-center gap-1 relative">
+        {/* sliding pill */}
+        <div
+          className="absolute rounded-pill bg-ink pointer-events-none"
+          style={{
+            left: pillStyle.left,
+            width: pillStyle.width,
+            top: 0,
+            bottom: 0,
+            transition: 'left 220ms cubic-bezier(0.4,0,0.2,1), width 220ms cubic-bezier(0.4,0,0.2,1)',
+          }}
+        />
+        {NAV_LINKS.map((link, i) => {
           const active = isActive(link.path, pathname)
           return (
             <button
               key={link.id}
+              ref={el => { btnRefs.current[i] = el }}
               onClick={() => navigate(link.path)}
               className={cn(
-                'flex items-center gap-2 font-sans font-semibold text-[15px] px-4 py-[9px] rounded-pill border-none cursor-pointer transition-all duration-150',
-                active
-                  ? 'bg-ink text-white'
-                  : 'bg-transparent text-ink-soft hover:text-ink hover:bg-[rgba(63,58,49,.05)]',
+                'relative z-10 flex items-center gap-2 font-sans font-semibold text-[15px] px-4 py-[9px] rounded-pill border-none cursor-pointer transition-colors duration-150',
+                active ? 'text-white' : 'text-ink-soft hover:text-ink',
               )}
             >
               {link.icon({ size: 18, color: active ? '#fff' : 'currentColor' })}
