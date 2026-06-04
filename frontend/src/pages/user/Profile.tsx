@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useAuth, useUser } from '@clerk/clerk-react'
+import { useNavigate } from 'react-router-dom'
 import ClothingCard from '../../components/ui/cards/ClothingCard'
 import OutfitCard from '../../components/ui/cards/OutfitCard'
 import EditProfileModal from '../../components/ui/modals/EditProfileModal'
+import EditClothingModal from '../../components/ui/modals/EditClothingModal'
+import EditOutfitModal from '../../components/ui/modals/EditOutfitModal'
 import { getAllOutfits, type Outfit } from '../../services/outfitApi'
 import { getAllClothes, type ClothingItem } from '../../services/clothingApi'
 import { Icon } from '../../components/ui/icons'
@@ -10,9 +13,13 @@ import { Icon } from '../../components/ui/icons'
 export default function Profile() {
   const { userId, getToken } = useAuth()
   const { user } = useUser()
+  const navigate = useNavigate()
   const [favoriteOutfits, setFavoriteOutfits] = useState<Outfit[]>([])
   const [clothes, setClothes] = useState<ClothingItem[]>([])
   const [showEditModal, setShowEditModal] = useState(false)
+  const [editingItemId, setEditingItemId] = useState<string | null>(null)
+  const [editInitialDelete, setEditInitialDelete] = useState(false)
+  const [editingOutfitId, setEditingOutfitId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!userId) return
@@ -68,6 +75,8 @@ export default function Profile() {
                   key={outfit._id}
                   name={outfit.name}
                   items={outfit.items.map(i => ({ label: i.name, imageUrl: i.imageUrl }))}
+                  onEdit={() => navigate(`/outfits/builder/${outfit._id}`)}
+                  onDelete={() => setEditingOutfitId(outfit._id)}
                 />
               ))}
             </div>
@@ -79,12 +88,37 @@ export default function Profile() {
         <h2 className="text-lg font-medium">My Closet</h2>
         <div className="grid grid-autofill-140 gap-3.5">
           {clothes.map(item => (
-            <ClothingCard key={item._id} label={item.name} imageUrl={item.imageUrl} />
+            <ClothingCard
+              key={item._id}
+              label={item.name}
+              imageUrl={item.imageUrl}
+              onEdit={() => { setEditInitialDelete(false); setEditingItemId(item._id) }}
+              onDelete={() => { setEditInitialDelete(true); setEditingItemId(item._id) }}
+            />
           ))}
         </div>
       </section>
 
       {showEditModal && <EditProfileModal onClose={() => setShowEditModal(false)} />}
+      {editingItemId && (
+        <EditClothingModal
+          itemId={editingItemId}
+          initialConfirmDelete={editInitialDelete}
+          onClose={() => setEditingItemId(null)}
+          onSaved={updated => setClothes(prev => prev.map(i => i._id === updated._id ? updated : i))}
+          onDeleted={id => setClothes(prev => prev.filter(i => i._id !== id))}
+        />
+      )}
+      {editingOutfitId && userId && (
+        <EditOutfitModal
+          outfitId={editingOutfitId}
+          userId={userId}
+          initialConfirmDelete={true}
+          onClose={() => setEditingOutfitId(null)}
+          onSaved={updated => setFavoriteOutfits(prev => updated.isFavorite ? prev.map(o => o._id === updated._id ? updated : o) : prev.filter(o => o._id !== updated._id))}
+          onDeleted={id => setFavoriteOutfits(prev => prev.filter(o => o._id !== id))}
+        />
+      )}
     </div>
   )
 }
