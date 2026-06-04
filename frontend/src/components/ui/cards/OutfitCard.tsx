@@ -13,9 +13,12 @@ export default function OutfitCard({ name, items = [], onClick, onEdit, onDelete
   const empties = Array(Math.max(0, 4 - displayItems.length)).fill(null)
 
   return (
-    <button
+    <div
       className="group bg-bg-soft border border-border-soft rounded-lg p-3 cursor-pointer text-left flex flex-col gap-2.5 transition-all duration-[180ms] hover:-translate-y-[3px] hover:shadow-md hover:border-line relative"
       onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onClick?.() }}
     >
       <div className="absolute top-3 right-3 z-10 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-[180ms] flex gap-1.5">
         <button
@@ -55,6 +58,6 @@ export default function OutfitCard({ name, items = [], onClick, onEdit, onDelete
         ))}
       </div>
       <p className="font-sans font-semibold text-[15px] text-ink whitespace-nowrap overflow-hidden text-ellipsis">{name}</p>
-    </button>
+    </div>
   )
 }

@@ -84,11 +84,14 @@ export default function OutfitBuilderCanvas() {
   const [saveError, setSaveError] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [mobilePanelOpen, setMobilePanelOpen] = useState(false)
 
   const canvasRef = useRef<HTMLDivElement>(null)
   const draggingRef = useRef<DragState | null>(null)
   const resizingRef = useRef<ResizeState | null>(null)
   const rotatingRef = useRef<RotateState | null>(null)
+  const panelDragRef = useRef<{ clothingId: string; imageUrl: string; name: string; startX: number; startY: number } | null>(null)
+  const [panelGhost, setPanelGhost] = useState<{ x: number; y: number; imageUrl: string } | null>(null)
 
   useEffect(() => {
     if (!userId) return
@@ -384,17 +387,31 @@ export default function OutfitBuilderCanvas() {
     }
   }
 
+  function handlePanelPointerDown(e: React.PointerEvent, item: ClothingItem) {
+    panelDragRef.current = { clothingId: item._id, imageUrl: item.imageUrl, name: item.name, startX: e.clientX, startY: e.clientY }
+  }
+
+  function handlePanelPointerMove(e: React.PointerEvent, item: ClothingItem) {
+    const drag = panelDragRef.current
+    if (!drag || drag.clothingId !== item._id) return
+    if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > 8) {
+      setPanelGhost({ x: e.clientX, y: e.clientY, imageUrl: drag.imageUrl })
+      setMobilePanelOpen(false)
+    }
+  }
+
   return (
     <div className="h-svh flex flex-col" style={{ background: 'var(--color-bg)' }}>
 
       {/* Top bar */}
       <div
-        className="flex items-center gap-3 px-5 py-3 shrink-0"
+        className="flex items-center gap-2 md:gap-3 px-3 md:px-5 py-2 md:py-3 shrink-0"
         style={{ borderBottom: '1px solid var(--color-border)', background: 'var(--color-header)' }}
       >
+        {/* Back */}
         <button
           onClick={() => navigate('/outfits')}
-          className="flex items-center gap-1.5 font-sans font-semibold text-[14px] cursor-pointer border-none rounded-pill px-3 py-2 transition-colors duration-150 shrink-0"
+          className="flex items-center gap-1.5 font-sans font-semibold text-[14px] cursor-pointer border-none rounded-pill px-2 md:px-3 py-2 transition-colors duration-150 shrink-0"
           style={{ color: 'var(--color-ink-soft)', background: 'transparent' }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(63,58,49,.07)'; (e.currentTarget as HTMLElement).style.color = 'var(--color-ink)' }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = 'var(--color-ink-soft)' }}
@@ -402,46 +419,58 @@ export default function OutfitBuilderCanvas() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M12 5l-7 7 7 7"/>
           </svg>
-          Back
+          <span className="hidden md:inline">Back</span>
         </button>
 
+        {/* Name */}
         <input
           type="text"
           value={outfitName}
           onChange={e => { setOutfitName(e.target.value); setSaveError(null) }}
           placeholder="Name your outfit..."
-          className="borderless-input text-[20px] font-semibold shrink-0"
-          style={{ width: 260 }}
+          className="borderless-input text-[17px] md:text-[20px] font-semibold flex-1 md:flex-none md:shrink-0 md:w-[260px]"
         />
 
-        {/* Tags inline */}
-        <div className="flex-1 min-w-0">
-          <TagInput tags={tags} onChange={setTags} suggestions={SUGGESTIONS} placeholder="Add tags..." />
+        {/* Tags + fav — desktop only */}
+        <div className="hidden md:flex items-center gap-3 flex-1 min-w-0">
+          <div className="flex-1 min-w-0">
+            <TagInput tags={tags} onChange={setTags} suggestions={SUGGESTIONS} placeholder="Add tags..." />
+          </div>
+          <button
+            onClick={() => setIsFavorite(f => !f)}
+            className="border-none bg-transparent cursor-pointer p-1 leading-none flex items-center gap-1.5 shrink-0"
+            aria-label="Toggle favorite"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={isFavorite ? 'var(--color-clay)' : 'none'} stroke={isFavorite ? 'var(--color-clay)' : 'var(--color-ink-soft)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <span className="font-sans text-[13px]" style={{ color: isFavorite ? 'var(--color-clay)' : 'var(--color-ink-soft)' }}>Favorite</span>
+          </button>
         </div>
 
-        {/* Favorite toggle */}
+        {/* Fav icon — mobile only */}
         <button
           onClick={() => setIsFavorite(f => !f)}
-          className="border-none bg-transparent cursor-pointer p-1 leading-none flex items-center gap-1.5 shrink-0"
+          className="md:hidden border-none bg-transparent cursor-pointer p-1 leading-none flex items-center shrink-0"
           aria-label="Toggle favorite"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill={isFavorite ? 'var(--color-clay)' : 'none'} stroke={isFavorite ? 'var(--color-clay)' : 'var(--color-ink-soft)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill={isFavorite ? 'var(--color-clay)' : 'none'} stroke={isFavorite ? 'var(--color-clay)' : 'var(--color-ink-soft)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
-          <span className="font-sans text-[13px]" style={{ color: isFavorite ? 'var(--color-clay)' : 'var(--color-ink-soft)' }}>Favorite</span>
         </button>
 
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Actions */}
+        <div className="flex items-center gap-2 md:gap-3 shrink-0">
           {saveError && (
-            <span className="text-[13px] font-sans" style={{ color: 'var(--color-clay)' }}>{saveError}</span>
+            <span className="hidden md:block text-[13px] font-sans" style={{ color: 'var(--color-clay)' }}>{saveError}</span>
           )}
           {isEditMode && !confirmDelete && (
-            <Button variant="ghost" size="sm" onClick={() => setConfirmDelete(true)}>
+            <Button variant="ghost" size="sm" className="hidden md:inline-flex" onClick={() => setConfirmDelete(true)}>
               Delete
             </Button>
           )}
           {isEditMode && confirmDelete && (
-            <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
               <span className="text-[13px] font-sans" style={{ color: 'var(--color-ink-soft)' }}>Delete outfit?</span>
               <Button size="sm" disabled={deleting} onClick={handleDelete}>
                 {deleting ? 'Deleting...' : 'Confirm'}
@@ -450,7 +479,7 @@ export default function OutfitBuilderCanvas() {
             </div>
           )}
           <Button onClick={handleSave} disabled={saving} size="md">
-            {saving ? 'Saving...' : isEditMode ? 'Save Changes' : 'Save Outfit'}
+            {saving ? 'Saving...' : isEditMode ? 'Save' : 'Save'}
           </Button>
         </div>
       </div>
@@ -460,7 +489,7 @@ export default function OutfitBuilderCanvas() {
 
         {/* Left panel */}
         <div
-          className="w-[210px] shrink-0 flex flex-col"
+          className="hidden md:flex w-[210px] shrink-0 flex-col"
           style={{ borderRight: '1px solid var(--color-border)', background: 'var(--color-surface)' }}
         >
           {/* Category tabs */}
@@ -545,13 +574,134 @@ export default function OutfitBuilderCanvas() {
                 <path d="M12 8v8M8 12h8"/>
               </svg>
               <p className="font-sans text-[14px] text-center leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-                Click items from the panel<br/>or drag them here
+                <span className="hidden md:block">Click items from the panel<br/>or drag them here</span>
+                <span className="md:hidden">Hold &amp; drag items from below<br/>or tap to add</span>
               </p>
             </div>
           )}
         </div>
 
       </div>
+
+      {/* Mobile clothing panel — bottom sheet */}
+      <div
+        className="md:hidden fixed inset-x-0 bottom-0 flex flex-col"
+        style={{
+          background: 'var(--color-surface)',
+          borderTop: '1px solid var(--color-border)',
+          height: '58vh',
+          zIndex: 50,
+          boxShadow: '0 -4px 24px rgba(0,0,0,0.10)',
+          transform: mobilePanelOpen ? 'translateY(0)' : 'translateY(calc(100% - 3rem))',
+          transition: 'transform 280ms cubic-bezier(0.32,0.72,0,1)',
+        }}
+      >
+        {/* Handle / toggle row */}
+        <button
+          className="flex items-center justify-between px-4 shrink-0 w-full border-none cursor-pointer"
+          style={{ height: '3rem', background: 'transparent', color: 'var(--color-ink)' }}
+          onClick={() => setMobilePanelOpen(p => !p)}
+        >
+          <span className="font-sans font-semibold text-[14px]">Add items</span>
+          <svg
+            width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+            style={{ transform: mobilePanelOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 280ms' }}
+          >
+            <path d="M18 15l-6-6-6 6"/>
+          </svg>
+        </button>
+
+        {/* Category tabs — horizontal scroll */}
+        <div
+          className="flex gap-1 px-3 pb-2 overflow-x-auto shrink-0"
+          style={{ borderBottom: '1px solid var(--color-border-soft)' }}
+        >
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className="font-sans font-semibold text-[12px] px-3 py-[6px] rounded-lg border-none cursor-pointer whitespace-nowrap transition-colors duration-150 shrink-0"
+              style={{
+                background: activeCategory === cat ? 'var(--color-clay-tint)' : 'transparent',
+                color: activeCategory === cat ? 'var(--color-clay-deep)' : 'var(--color-ink-soft)',
+              }}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Clothing grid — 3 columns, hold and drag to canvas */}
+        <div className="flex-1 overflow-y-auto p-2">
+          {loadingClothes ? (
+            <p className="text-[12px] text-center py-6" style={{ color: 'var(--color-muted)' }}>Loading...</p>
+          ) : filteredClothes.length === 0 ? (
+            <p className="text-[12px] text-center py-6" style={{ color: 'var(--color-muted)' }}>No items yet</p>
+          ) : (
+            <div className="grid grid-cols-3 gap-2">
+              {filteredClothes.map(item => (
+                <div
+                  key={item._id}
+                  style={{ touchAction: 'none' }}
+                  onPointerDown={e => handlePanelPointerDown(e, item)}
+                  onPointerMove={e => handlePanelPointerMove(e, item)}
+                  onPointerCancel={() => { panelDragRef.current = null }}
+                >
+                  <PanelClothingCard
+                    item={item}
+                    onClick={() => {
+                      if (!panelGhost) {
+                        addToCanvas(item._id, item.imageUrl, item.name)
+                        setMobilePanelOpen(false)
+                      }
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Drag ghost + drop overlay */}
+      {panelGhost && (
+        <div
+          className="fixed inset-0"
+          style={{ zIndex: 100, touchAction: 'none' }}
+          onPointerMove={e => setPanelGhost(g => g ? { ...g, x: e.clientX, y: e.clientY } : null)}
+          onPointerUp={e => {
+            const drag = panelDragRef.current
+            panelDragRef.current = null
+            setPanelGhost(null)
+            if (!drag) return
+            const canvas = canvasRef.current
+            if (!canvas) return
+            const rect = canvas.getBoundingClientRect()
+            if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+              addToCanvas(drag.clothingId, drag.imageUrl, drag.name, e.clientX - rect.left - 50, e.clientY - rect.top - 60)
+            }
+          }}
+          onPointerCancel={() => { panelDragRef.current = null; setPanelGhost(null) }}
+        >
+          <img
+            src={panelGhost.imageUrl}
+            alt=""
+            draggable={false}
+            style={{
+              position: 'absolute',
+              left: panelGhost.x - 50,
+              top: panelGhost.y - 60,
+              width: 100,
+              opacity: 0.88,
+              transform: 'rotate(3deg) scale(1.05)',
+              pointerEvents: 'none',
+              filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.28))',
+            }}
+          />
+        </div>
+      )}
+
     </div>
   )
 }
