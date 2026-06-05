@@ -192,6 +192,12 @@ The frontend is deployed on Vercel with a proxy rewrite that forwards `/api/*` t
 
 ---
 
+## What We Learned
+
+Building Digital Closet exposed each of us to some part of the stack we hadn't worked with before. Clerk auth, AWS S3, Gemini API integration, and in-browser background removal via WebAssembly all required real troubleshooting beyond just researching documentation. Splitting into clear roles helped with parallel progress, but keeping the frontend, backend, and database layers in sync still required more communication than expected. Deploying across two platforms with a CI/CD pipeline gave practical exposure to environment config, cold starts, and the gap between local development and production. Overall, building Digital-Closet gave each of us a clearer picture of what coordinating a full-stack app actually looks like end to end.
+
+---
+
 ## Links
 
 - **Deployed Link:** https://digital-closet-iota.vercel.app/
